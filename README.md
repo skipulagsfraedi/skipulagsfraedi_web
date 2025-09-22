@@ -1,46 +1,51 @@
-# Astro Starter Kit: Basics
+# Skipulagsfræðingafélag Íslands vefur
 
-```sh
-npm create astro@latest -- --template basics
-```
+Astro verkefni sem þjónar sem opinber vefur Skipulagsfræðingafélags Íslands. Vefurinn sækir fréttir og efni úr Sanity CMS verkefninu `cpe0lcma` og birtir á forsíðu og sérstökum fréttasíðum.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Uppsetning
 
-## 🚀 Project Structure
+1. Afritaðu umhverfisskilgreiningar:
 
-Inside of your Astro project, you'll see the following folders and files:
+   ```sh
+   cp .env.example .env
+   ```
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
+2. Settu eftirfarandi gildi í `.env` (sjá nánar hér að neðan):
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+   ```ini
+   SANITY_PROJECT_ID=cpe0lcma
+   SANITY_DATASET=production
+   SANITY_API_VERSION=2024-01-01
+   # SANITY_API_READ_TOKEN=skráður_sanity_read_token (valkvætt ef dataset er lokað)
+   # SANITY_USE_CDN=false  # stilltu á false ef þú þarft alltaf ferskt efni
+   ```
 
-## 🧞 Commands
+3. Settu upp háð og ræstu þróunarþjón:
 
-All commands are run from the root of the project, from a terminal:
+   ```sh
+   npm install
+   npm run dev
+   ```
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+Vefurinn er sjálfgefið byggður sem Static Site Generation, þannig að Astro sækir fréttir úr Sanity við byggingu. Ef þú notar einkagögn þarf `SANITY_API_READ_TOKEN` með `read` heimildum.
 
-## 👀 Want to learn more?
+## Skipulag
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- `src/lib/sanity.ts` stillir Sanity client með því að lesa umhverfisskilyrði.
+- `src/lib/news.ts` inniheldur gagnasöfnun og hjálparföll fyrir fréttir.
+- `src/lib/portableText.ts` umbreytir Portable Text yfir í HTML með sérstilltri myndameðhöndlun.
+- `src/pages/frettir/index.astro` sýnir allar fréttir og `src/pages/frettir/[year]/[month]/[day]/[slug].astro` birtir einstakar færslur með dagsetningu í slóð.
+- Forsíðan (`src/pages/index.astro`) kallar á `getLatestNews` og sýnir nýjustu þrjár færslur.
+
+## Nytsamleg skipanir
+
+| Skipun            | Lýsing                                      |
+| :---------------- | :------------------------------------------- |
+| `npm install`     | Setur upp öll háð                            |
+| `npm run dev`     | Keyrir þróunarþjón á `http://localhost:4321` |
+| `npm run build`   | Byggir framleiðsluútgáfu í `dist/`           |
+| `npm run preview` | Sýnir byggða útgáfu fyrir yfirferð           |
+
+## Tengsl við Sanity Studio
+
+Sanity Studio verkefnið er í möppunni `../skipulagsfraedi_sanity`. Tryggðu að skema fyrir `post` innihaldi `title`, `slug`, `publishedAt` og `content` eins og skilgreint er þar. Nýjar færslur verða sjálfkrafa birtar í Astro við næstu byggingu (eða ef CDN er notað, eftir skammt). Ef þú þarft lifandi uppfærslur geturðu keyrt `SANITY_USE_CDN=false` eða endurbyggt vefinn eftir breytingar.

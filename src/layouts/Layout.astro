@@ -1,22 +1,52 @@
+---
+
+import '../styles/global.css';
+
+const {
+	title = 'Skipulagsfræðingafélag Íslands',
+	description = 'Minimal scaffolding for the Skipulagsfræði web experience.',
+} = Astro.props;
+
+const year = new Date().getFullYear();
+---
+
 <!doctype html>
-<html lang="en">
+<html lang="is" class="h-full bg-zinc-50">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>{title}</title>
+		{description && <meta name="description" content={description} />}
 	</head>
-	<body>
-		<slot />
+	<body class="min-h-screen bg-zinc-50 text-slate-900 antialiased">
+		<div class="flex min-h-screen flex-col">
+			<header class="border-b border-zinc-200 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/70">
+				<div class="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-4 md:py-8">
+					<a href="/" class="flex items-center gap-3 font-semibold text-slate-700">
+						<img src="/sffi-logo.svg" alt="Skipulagsfræðingafélag Íslands merki" class="h-10 w-auto md:h-14" />
+						<span class="text-lg leading-tight md:text-2xl">Skipulagsfræðingafélag Íslands</span>
+					</a>
+					<nav class="flex items-center gap-6 font-medium text-slate-500">
+						<a class="transition-colors hover:text-[#4d5c55]" href="/frettir">Fréttir</a>
+						<a class="transition-colors hover:text-[#4d5c55]" href="#project">Verkefni</a>
+						<a class="transition-colors hover:text-[#4d5c55]" href="#team">Teymið</a>
+						<a class="transition-colors hover:text-[#4d5c55]" href="#contact">Hafðu samband</a>
+					</nav>
+				</div>
+			</header>
+			<main class="flex-1">
+				<slot />
+			</main>
+			<footer class="border-t border-zinc-200 bg-white/60">
+				<div class="mx-auto flex w-full max-w-5xl flex-col gap-2 px-6 py-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+					<p class="tracking-tight">© {year} Skipulagsfræðingafélag Íslands. Allur réttur áskilinn.</p>
+					<a class="transition-colors hover:text-[#4d5c55]" href="mailto:hallo@skipulagsfraedi.is">
+						hallo@skipulagsfraedi.is
+					</a>
+				</div>
+			</footer>
+		</div>
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>

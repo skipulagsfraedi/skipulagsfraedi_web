@@ -1,0 +1,67 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import {getAllNews, getNewsPermalink, toPlainText} from '../../lib/news';
+
+const pageTitle = 'Fréttir | Skipulagsfræðingafélag Íslands';
+const pageDescription = 'Nýjustu fréttir og greinar frá Skipulagsfræðingafélagi Íslands.';
+
+const posts = await getAllNews();
+const hasPosts = posts.length > 0;
+
+const formatDate = (value: string) =>
+	new Date(value).toLocaleDateString('is-IS', {
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric',
+	});
+
+const getExcerpt = (content) => {
+	const text = toPlainText(content);
+	return text.length > 220 ? `${text.slice(0, 217)}…` : text;
+};
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+	<section class="mx-auto w-full max-w-5xl px-6 py-16">
+		<div class="flex flex-col gap-4 pb-10">
+			<p class="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">Fréttir</p>
+			<h1 class="text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
+				Tíðindi frá félaginu
+			</h1>
+			<p class="max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
+				Lestu um verkefni, viðburði og greinar sem varpa ljósi á störf skipulagsfræðinga.
+			</p>
+		</div>
+
+		{hasPosts && (
+			<ul class="space-y-6">
+				{posts.map((post) => (
+					<li
+						key={post._id}
+						class="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+					>
+							<a href={getNewsPermalink(post)} class="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
+							<div class="md:w-48">
+								<p class="text-xs font-medium uppercase tracking-[0.25em] text-slate-400">
+									{formatDate(post.publishedAt)}
+								</p>
+							</div>
+							<div class="flex-1 space-y-2">
+								<h2 class="text-xl font-semibold text-slate-900">{post.title}</h2>
+								<p class="text-sm leading-relaxed text-slate-600">{getExcerpt(post.content)}</p>
+							</div>
+							<span class="inline-flex items-center gap-2 text-sm font-semibold text-[#4d5c55]">
+								Lesa meira &rarr;
+							</span>
+						</a>
+					</li>
+				))}
+			</ul>
+		)}
+		{!hasPosts && (
+			<div class="rounded-3xl border border-dashed border-zinc-200 p-8 text-sm text-slate-500">
+				Hér mun birtast yfirlit frétta um leið og innihald er tilbúið í Sanity.
+			</div>
+		)}
+	</section>
+</Layout>

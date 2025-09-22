@@ -1,11 +1,140 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import {getLatestNews, getNewsPermalink, toPlainText} from '../lib/news';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const pageTitle = 'Skipulagsfræðingafélag Íslands';
+const pageDescription = 'Skipulagsfræði veitir lausnir sem móta lifandi og sjálfbær borgarrými.';
+
+const latestNews = await getLatestNews(3);
+const hasNews = latestNews.length > 0;
+
+const formatDate = (value: string) =>
+	new Date(value).toLocaleDateString('is-IS', {
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric',
+	});
+
+const getExcerpt = (content) => {
+	const text = toPlainText(content);
+	return text.length > 180 ? `${text.slice(0, 177)}…` : text;
+};
 ---
 
-<Layout>
-	<Welcome />
+<Layout title={pageTitle} description={pageDescription}>
+	<section class="mx-auto flex min-h-[calc(100vh-9rem)] w-full max-w-5xl flex-col justify-center gap-8 px-6 py-16">
+		<p class="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">Vefur í vinnslu</p>
+		<div class="space-y-5">
+			<h1 class="text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
+				Skipulagsfræði skapar sveigjanlegar lausnir fyrir íslenskt skipulag
+			</h1>
+			<p class="max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
+				Við vinnum með sveitarfélögum, stofnunum og samstarfsaðilum að því að skilgreina og móta
+				nýju kynslóðina af borgarrýmum. Þessi síða er í uppbyggingu en hér má finna helstu
+				upplýsingar og tengiliði.
+			</p>
+		</div>
+		<div class="flex flex-wrap gap-4">
+			<a
+				href="#project"
+				class="inline-flex items-center gap-2 rounded-full bg-[#87A291] px-5 py-2 text-sm font-semibold text-slate-900 shadow-sm transition-colors hover:bg-[#779182] focus-visible:outline-offset-2 focus-visible:outline-[#c6d4cd]"
+			>
+				Skoða verkefni
+			</a>
+			<a
+				href="#contact"
+				class="inline-flex items-center gap-2 rounded-full border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-500 hover:text-slate-900"
+			>
+				Hafðu samband
+			</a>
+		</div>
+	</section>
+
+	<section id="project" class="mx-auto w-full max-w-5xl px-6 pb-24">
+		<div class="grid gap-6 rounded-3xl border border-zinc-200 bg-white px-6 py-10 text-sm text-slate-600 sm:grid-cols-2">
+			<div class="space-y-3">
+				<h2 class="text-xl font-semibold text-slate-900">Verkefni í þróun</h2>
+				<p>
+					Við erum að setja saman yfirlit yfir verkefni sem sýna hvernig við nálgumst
+					stefnumótun, hönnun rýma og samfélagslega samráð.
+				</p>
+			</div>
+			<ul class="space-y-3 text-xs uppercase tracking-[0.2em] text-slate-500">
+				<li class="text-[#4d5c55]">Skipulagsáætlanir</li>
+				<li class="text-[#4d5c55]">Hverfisgreiningar</li>
+				<li class="text-[#4d5c55]">Samráðsvettvangar</li>
+			</ul>
+		</div>
+	</section>
+
+	<section id="news" class="mx-auto w-full max-w-5xl px-6 pb-24">
+		<div class="flex flex-col gap-10 rounded-3xl border border-zinc-200 bg-white px-6 py-10">
+			<div class="flex flex-col gap-3">
+				<p class="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">Fréttir</p>
+				<h2 class="text-xl font-semibold text-slate-900">Nýjustu tíðindi úr starfseminni</h2>
+				<p class="text-sm text-slate-600">
+					Lestu um verkefni, viðburði og sjónarmið skipulagsfræðinga.
+				</p>
+			</div>
+			{hasNews && (
+				<ul class="grid gap-6 md:grid-cols-3">
+					{latestNews.map((post) => (
+						<li
+							key={post._id}
+							class="flex h-full flex-col rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+						>
+							<a href={getNewsPermalink(post)} class="flex h-full flex-col gap-4">
+								<div class="space-y-1">
+									<p class="text-xs font-medium uppercase tracking-[0.25em] text-slate-400">
+										{formatDate(post.publishedAt)}
+									</p>
+									<h3 class="text-base font-semibold text-slate-900">
+										{post.title}
+									</h3>
+								</div>
+								<p class="text-sm leading-relaxed text-slate-600">{getExcerpt(post.content)}</p>
+								<span class="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-[#4d5c55]">
+									Lesa meira &rarr;
+								</span>
+							</a>
+						</li>
+					))}
+				</ul>
+			)}
+			{!hasNews && (
+				<div class="rounded-2xl border border-dashed border-zinc-200 p-6 text-sm text-slate-500">
+					Engar fréttir hafa verið birtar enn, en kíktu fljótlega aftur.
+				</div>
+			)}
+			<div>
+				<a
+					href="/frettir"
+					class="inline-flex items-center gap-2 rounded-full border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-500 hover:text-slate-900"
+				>
+					Sjá allar fréttir
+				</a>
+			</div>
+		</div>
+	</section>
+
+	<section id="team" class="mx-auto w-full max-w-5xl px-6 pb-24">
+		<div class="rounded-3xl border border-zinc-200 bg-white px-6 py-10 text-sm text-slate-600">
+			<h2 class="text-xl font-semibold text-slate-900">Teymið</h2>
+			<p class="mt-4 max-w-2xl">
+				Við búum saman til leiðir sem byggja á rannsóknum, innblæstri og samtali við fólkið sem
+				býr í hverfinu. Kynntu þér starfsfólkið og samstarfsaðila fljótlega hér.
+			</p>
+		</div>
+	</section>
+
+	<section id="contact" class="mx-auto w-full max-w-5xl px-6 pb-32">
+		<div class="rounded-3xl border border-zinc-200 bg-white px-6 py-10 text-sm text-slate-600">
+			<h2 class="text-xl font-semibold text-slate-900">Hafðu samband</h2>
+			<p class="mt-4 max-w-xl">
+				Best er að senda okkur línu á
+				<a class="ml-1 font-semibold text-[#4d5c55] transition-colors hover:text-[#2f3a36]" href="mailto:hallo@skipulagsfraedi.is">hallo@skipulagsfraedi.is</a>.
+				Við svarum fljótt og erum ávallt opin fyrir samtali um nýjar hugmyndir.
+			</p>
+		</div>
+	</section>
 </Layout>
