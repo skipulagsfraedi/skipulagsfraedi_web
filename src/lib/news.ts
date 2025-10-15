@@ -1,5 +1,6 @@
 import type {PortableTextBlock} from '@portabletext/types';
 import {sanityClient} from './sanity';
+export {toPlainText} from './portableText';
 
 export type NewsPost = {
   _id: string;
@@ -43,12 +44,3 @@ export const getNewsBySlug = async (slug: string) =>
     `*[_type == "post" && slug.current == $slug][0] ${newsProjection}`,
     {slug}
   );
-
-export const toPlainText = (blocks: PortableTextBlock[] = []) =>
-  blocks
-    .filter((block) => block._type === 'block' && Array.isArray(block.children))
-    .flatMap((block) => block.children ?? [])
-    .map((child) => (typeof (child as {text?: string}).text === 'string' ? child.text : ''))
-    .join(' ')
-    .replace(/\s+/g, ' ')
-    .trim();

@@ -1,11 +1,16 @@
 ---
 
 import '../styles/global.css';
+import type {PageTreeItem} from '../lib/pages';
+import {getPageTree} from '../lib/pages';
 
 const {
 	title = 'Skipulagsfræðingafélag Íslands',
 	description = 'Minimal scaffolding for the Skipulagsfræði web experience.',
 } = Astro.props;
+
+const navPages: PageTreeItem[] = await getPageTree();
+const navLinks = navPages.filter((page) => page.slug && page.slug !== 'index');
 
 const year = new Date().getFullYear();
 ---
@@ -28,12 +33,20 @@ const year = new Date().getFullYear();
 						<img src="/sffi-logo.svg" alt="Skipulagsfræðingafélag Íslands merki" class="h-10 w-auto md:h-14" />
 						<span class="text-lg leading-tight md:text-2xl">Skipulagsfræðingafélag Íslands</span>
 					</a>
-					<nav class="flex items-center gap-6 font-medium text-slate-500">
-						<a class="transition-colors hover:text-[#4d5c55]" href="/frettir">Fréttir</a>
-						<a class="transition-colors hover:text-[#4d5c55]" href="#project">Verkefni</a>
-						<a class="transition-colors hover:text-[#4d5c55]" href="#team">Teymið</a>
-						<a class="transition-colors hover:text-[#4d5c55]" href="#contact">Hafðu samband</a>
-					</nav>
+				<nav class="flex items-center gap-6 font-medium text-slate-500">
+					<a class="transition-colors hover:text-[#4d5c55]" href="/frettir">Fréttir</a>
+					{navLinks.map((page) => (
+						<a
+							class="transition-colors hover:text-[#4d5c55]"
+							href={`/${page.slug}`}
+						>
+							{page.title}
+						</a>
+					))}
+					<a class="transition-colors hover:text-[#4d5c55]" href="/#project">Verkefni</a>
+					<a class="transition-colors hover:text-[#4d5c55]" href="/#team">Teymið</a>
+					<a class="transition-colors hover:text-[#4d5c55]" href="/#contact">Hafðu samband</a>
+				</nav>
 				</div>
 			</header>
 			<main class="flex-1">

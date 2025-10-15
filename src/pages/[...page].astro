@@ -1,0 +1,192 @@
+---
+import Layout from '../layouts/Layout.astro';
+import type {PageDocument} from '../lib/pages';
+import {getAllPages} from '../lib/pages';
+import {portableTextToHtml, toPlainText} from '../lib/portableText';
+
+type Breadcrumb = {
+  label: string;
+  path: string;
+};
+
+type ChildPage = PageDocument & {
+  path: string;
+};
+
+const siteTitle = 'Skipulagsfræðingafélag Íslands';
+const truncate = (value: string, max: number) =>
+  value.length > max ? `${value.slice(0, max - 3)}...` : value;
+
+export async function getStaticPaths() {
+  const pages = await getAllPages();
+  const pagesById = new Map(pages.map((page) => [page._id, page]));
+
+  const childrenByParent = new Map<string, PageDocument[]>();
+  for (const page of pages) {
+    const parentId = page.parent?._id;
+    if (!parentId) continue;
+    const items = childrenByParent.get(parentId) ?? [];
+    items.push(page);
+    childrenByParent.set(parentId, items);
+  }
+
+  const buildPath = (segments: string[]) => `/${segments.join('/')}`;
+
+  const getSegments = (page: PageDocument): string[] | null => {
+    if (!page.slug) {
+      return null;
+    }
+
+    if (page.parent?._id) {
+      const parent = pagesById.get(page.parent._id) ?? page.parent;
+      const parentSlug = parent.slug;
+      if (!parentSlug) {
+        return null;
+      }
+      return [parentSlug, page.slug];
+    }
+
+    return [page.slug];
+  };
+
+  const results: Array<{
+    params: {page: string[]};
+    props: {page: PageDocument; breadcrumbs: Breadcrumb[]; childPages: ChildPage[]};
+  }> = [];
+
+  for (const page of pages) {
+    const segments = getSegments(page);
+    if (!segments) {
+      continue;
+    }
+
+    const breadcrumbs: Breadcrumb[] = [{label: 'Heim', path: '/'}];
+    if (page.parent?._id) {
+      const parent = pagesById.get(page.parent._id);
+      const parentSegments = parent ? getSegments(parent) : null;
+      if (parent && parentSegments) {
+        breadcrumbs.push({
+          label: parent.title,
+          path: buildPath(parentSegments),
+        });
+      }
+    }
+    breadcrumbs.push({
+      label: page.title,
+      path: buildPath(segments),
+    });
+
+    const rawChildren = childrenByParent.get(page._id) ?? [];
+    const childPages = rawChildren
+      .map((child): ChildPage | null => {
+        const childSegments = getSegments(child);
+        if (!childSegments) {
+          return null;
+        }
+        return {...child, path: buildPath(childSegments)};
+      })
+      .filter((child): child is ChildPage => Boolean(child));
+
+    results.push({
+      params: {page: segments},
+      props: {
+        page,
+        breadcrumbs,
+        childPages,
+      },
+    });
+  }
+
+  return results;
+}
+
+const {page, breadcrumbs, childPages} = Astro.props as {
+  page: PageDocument;
+  breadcrumbs: Breadcrumb[];
+  childPages: ChildPage[];
+};
+
+const hasContent = Array.isArray(page.content) && page.content.length > 0;
+const hasChildren = childPages.length > 0;
+const htmlContent = hasContent ? portableTextToHtml(page.content) : '';
+const descriptionSource = toPlainText(page.content);
+const pageDescription = descriptionSource.length > 0 ? truncate(descriptionSource, 160) : page.title;
+const pageTitle = `${page.title} | ${siteTitle}`;
+const childSummaries = childPages.map((child) => {
+  const text = toPlainText(child.content);
+  const description = text.length > 0 ? truncate(text, 140) : '';
+  return {
+    _id: child._id,
+    title: child.title,
+    path: child.path,
+    description,
+  };
+});
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <article class="mx-auto w-full max-w-3xl px-6 py-16">
+    {breadcrumbs.length > 1 && (
+      <nav aria-label="Brauðmolaslóð" class="text-xs uppercase tracking-[0.25em] text-slate-400">
+        <ol class="flex flex-wrap items-center gap-2">
+          {breadcrumbs.map((item, index) => (
+            <li class="flex items-center gap-2" key={item.path}>
+              {index < breadcrumbs.length - 1 ? (
+                <a class="transition-colors hover:text-[#4d5c55]" href={item.path}>
+                  {item.label}
+                </a>
+              ) : (
+                <span class="text-slate-500">{item.label}</span>
+              )}
+              {index < breadcrumbs.length - 1 && <span class="text-slate-300">/</span>}
+            </li>
+          ))}
+        </ol>
+      </nav>
+    )}
+
+    <h1 class="mt-6 text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">{page.title}</h1>
+
+    {hasContent && (
+      <div class="mt-10 space-y-6 text-base leading-relaxed text-slate-700">
+        <div set:html={htmlContent} />
+      </div>
+    )}
+
+    {!hasContent && hasChildren && (
+      <p class="mt-10 text-base text-slate-600">Veldu undirsíðu hér fyrir neðan til að skoða nánar.</p>
+    )}
+
+    {!hasContent && !hasChildren && (
+      <p class="mt-10 text-base text-slate-600">Innihald er í vinnslu fyrir þessa síðu.</p>
+    )}
+  </article>
+
+  {hasChildren && (
+    <section class="mx-auto w-full max-w-5xl px-6 pb-24">
+      <div class="rounded-3xl border border-zinc-200 bg-white px-6 py-10 shadow-sm">
+        <h2 class="text-xl font-semibold text-slate-900">Undirsíður</h2>
+        <ul class="mt-6 grid gap-4 md:grid-cols-2">
+          {childSummaries.map((child) => (
+            <li
+              key={child._id}
+              class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+            >
+              <a href={child.path} class="flex h-full flex-col gap-3">
+                <h3 class="text-lg font-semibold text-slate-900">{child.title}</h3>
+                {child.description ? (
+                  <p class="text-sm leading-relaxed text-slate-600">{child.description}</p>
+                ) : (
+                  <p class="text-sm text-slate-500">Skoða síðu</p>
+                )}
+                <span class="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-[#4d5c55]">
+                  Lesa meira &rarr;
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+</Layout>

@@ -32,3 +32,12 @@ export const portableTextToHtml = (blocks: PortableTextBlock[] = []) =>
       },
     },
   });
+
+export const toPlainText = (blocks: PortableTextBlock[] = []) =>
+  blocks
+    .filter((block) => block._type === 'block' && Array.isArray(block.children))
+    .flatMap((block) => block.children ?? [])
+    .map((child) => (typeof (child as {text?: string}).text === 'string' ? child.text : ''))
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .trim();
