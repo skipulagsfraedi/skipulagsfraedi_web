@@ -50,7 +50,7 @@ export async function getStaticPaths() {
   };
 
   const results: Array<{
-    params: {page: string[]};
+    params: {page: string};
     props: {page: PageDocument; breadcrumbs: Breadcrumb[]; childPages: ChildPage[]};
   }> = [];
 
@@ -88,7 +88,7 @@ export async function getStaticPaths() {
       .filter((child): child is ChildPage => Boolean(child));
 
     results.push({
-      params: {page: segments},
+      params: {page: segments.join('/')},
       props: {
         page,
         breadcrumbs,
@@ -100,18 +100,18 @@ export async function getStaticPaths() {
   return results;
 }
 
-const {page, breadcrumbs, childPages} = Astro.props as {
+const {page: pageData, breadcrumbs, childPages} = Astro.props as {
   page: PageDocument;
   breadcrumbs: Breadcrumb[];
   childPages: ChildPage[];
 };
 
-const hasContent = Array.isArray(page.content) && page.content.length > 0;
+const hasContent = Array.isArray(pageData.content) && pageData.content.length > 0;
 const hasChildren = childPages.length > 0;
-const htmlContent = hasContent ? portableTextToHtml(page.content) : '';
-const descriptionSource = toPlainText(page.content);
-const pageDescription = descriptionSource.length > 0 ? truncate(descriptionSource, 160) : page.title;
-const pageTitle = `${page.title} | ${siteTitle}`;
+const htmlContent = hasContent ? portableTextToHtml(pageData.content) : '';
+const descriptionSource = toPlainText(pageData.content);
+const pageDescription = descriptionSource.length > 0 ? truncate(descriptionSource, 160) : pageData.title;
+const pageTitle = `${pageData.title} | ${siteTitle}`;
 const childSummaries = childPages.map((child) => {
   const text = toPlainText(child.content);
   const description = text.length > 0 ? truncate(text, 140) : '';
@@ -145,7 +145,7 @@ const childSummaries = childPages.map((child) => {
       </nav>
     )}
 
-    <h1 class="mt-6 text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">{page.title}</h1>
+    <h1 class="mt-6 text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">{pageData.title}</h1>
 
     {hasContent && (
       <div class="mt-10 space-y-6 text-base leading-relaxed text-slate-700">
