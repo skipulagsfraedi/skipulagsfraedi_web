@@ -1,4 +1,5 @@
 ---
+// src/pages/index.astro
 import Layout from '../layouts/Layout.astro';
 import {getLatestNews, getNewsPermalink, toPlainText} from '../lib/news';
 
@@ -7,6 +8,8 @@ const pageDescription = 'Skipulagsfræði veitir lausnir sem móta lifandi og sj
 
 const latestNews = await getLatestNews(3);
 const hasNews = latestNews.length > 0;
+
+const heroImage = 'https://www.figma.com/api/mcp/asset/cb60e198-bab5-43ce-a723-4208f8b9f108';
 
 const formatDate = (value: string) =>
 	new Date(value).toLocaleDateString('is-IS', {
@@ -22,50 +25,48 @@ const getExcerpt = (content) => {
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
-	<section class="mx-auto flex min-h-[calc(100vh-9rem)] w-full max-w-5xl flex-col justify-center gap-8 px-6 py-16">
-		<p class="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">Vefur í vinnslu</p>
-		<div class="space-y-5">
-			<h1 class="text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
-				Skipulagsfræði skapar sveigjanlegar lausnir fyrir íslenskt skipulag
-			</h1>
-			<p class="max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
-				Við vinnum með sveitarfélögum, stofnunum og samstarfsaðilum að því að skilgreina og móta
-				nýju kynslóðina af borgarrýmum. Þessi síða er í uppbyggingu en hér má finna helstu
-				upplýsingar og tengiliði.
-			</p>
-		</div>
-		<div class="flex flex-wrap gap-4">
-			<a
-				href="#project"
-				class="inline-flex items-center gap-2 rounded-full bg-[#87A291] px-5 py-2 text-sm font-semibold text-slate-900 shadow-sm transition-colors hover:bg-[#779182] focus-visible:outline-offset-2 focus-visible:outline-[#c6d4cd]"
-			>
-				Skoða verkefni
-			</a>
-			<a
-				href="#contact"
-				class="inline-flex items-center gap-2 rounded-full border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-500 hover:text-slate-900"
-			>
-				Hafðu samband
-			</a>
-		</div>
-	</section>
+	<section class="relative isolate overflow-hidden bg-[#87A291] mb-16 md:mb-20 lg:mb-28">
+        <div class="absolute inset-0 hidden bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.08)_100%)] lg:block" aria-hidden="true"></div>
+        <div class="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-24 lg:flex-row lg:items-center lg:justify-between">
+            <div class="flex max-w-2xl flex-col gap-6 text-white">
+                <p class="text-xs font-semibold uppercase tracking-[0.35em] text-[#e6edea]">Vefur í vinnslu</p>
+                <div class="space-y-5">
+                    <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">
+                        Skipulagsfræði skapar sveigjanlegar lausnir fyrir íslenskt skipulag
+                    </h1>
+                    <p class="text-base leading-relaxed text-[#f2f5f3] sm:text-lg">
+                        Við vinnum með sveitarfélögum, stofnunum og samstarfsaðilum að því að skilgreina og móta
+                        nýju kynslóðina af borgarrýmum. Þessi síða er í uppbyggingu en hér má finna helstu
+                        upplýsingar og tengiliði.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-4">
+                    <a
+                        href="#project"
+                        class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#2f3a36] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#f3f6f4] focus-visible:outline-offset-2 focus-visible:outline-[#c6d4cd]"
+                    >
+                        Skoða verkefni
+                    </a>
+                    <a
+                        href="#contact"
+                        class="inline-flex items-center gap-2 rounded-full border border-white/70 px-5 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-white hover:text-white/90"
+                    >
+                        Hafðu samband
+                    </a>
+                </div>
+            </div>
+            <figure class="mx-auto w-full max-w-[420px] overflow-hidden rounded-2xl bg-white/10 shadow-2xl ring-1 ring-white/40 lg:mx-0 lg:max-w-[520px]">
+                <img
+                    src={heroImage}
+                    alt="Yfirsýn yfir miðbæ Reykjavíkur"
+                    class="h-full w-full object-cover"
+                    loading="lazy"
+                />
+            </figure>
+        </div>
+    </section>
 
-	<section id="project" class="mx-auto w-full max-w-5xl px-6 pb-24">
-		<div class="grid gap-6 rounded-3xl border border-zinc-200 bg-white px-6 py-10 text-sm text-slate-600 sm:grid-cols-2">
-			<div class="space-y-3">
-				<h2 class="text-xl font-semibold text-slate-900">Verkefni í þróun</h2>
-				<p>
-					Við erum að setja saman yfirlit yfir verkefni sem sýna hvernig við nálgumst
-					stefnumótun, hönnun rýma og samfélagslega samráð.
-				</p>
-			</div>
-			<ul class="space-y-3 text-xs uppercase tracking-[0.2em] text-slate-500">
-				<li class="text-[#4d5c55]">Skipulagsáætlanir</li>
-				<li class="text-[#4d5c55]">Hverfisgreiningar</li>
-				<li class="text-[#4d5c55]">Samráðsvettvangar</li>
-			</ul>
-		</div>
-	</section>
+
 
 	<section id="news" class="mx-auto w-full max-w-5xl px-6 pb-24">
 		<div class="flex flex-col gap-10 rounded-3xl border border-zinc-200 bg-white px-6 py-10">
