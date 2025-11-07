@@ -2,6 +2,7 @@
 // src/pages/index.astro
 import type {PortableTextBlock} from '@portabletext/types';
 import Layout from '../layouts/Layout.astro';
+import {getHomeHero} from '../lib/home';
 import {getLatestNews, getNewsPermalink, toPlainText} from '../lib/news';
 
 const pageTitle = 'Skipulagsfræðingafélag Íslands';
@@ -11,6 +12,7 @@ const latestNews = await getLatestNews(3);
 const hasNews = latestNews.length > 0;
 
 const heroImage = 'https://www.figma.com/api/mcp/asset/cb60e198-bab5-43ce-a723-4208f8b9f108';
+const heroCopy = await getHomeHero();
 
 const formatDate = (value: string) =>
 	new Date(value).toLocaleDateString('is-IS', {
@@ -30,29 +32,27 @@ const getExcerpt = (content: PortableTextBlock[]) => {
         <div class="absolute inset-0 hidden bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.08)_100%)] lg:block" aria-hidden="true"></div>
         <div class="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-24 lg:flex-row lg:items-center lg:justify-between">
             <div class="flex max-w-2xl flex-col gap-6 text-white">
-                <p class="text-xs font-semibold uppercase tracking-[0.35em] text-[#e6edea]">Vefur í vinnslu</p>
+                <p class="text-xs font-semibold uppercase tracking-[0.35em] text-[#e6edea]">{heroCopy.badge}</p>
                 <div class="space-y-5">
                     <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">
-                        Skipulagsfræði skapar sveigjanlegar lausnir fyrir íslenskt skipulag
+                        {heroCopy.title}
                     </h1>
                     <p class="text-base leading-relaxed text-[#f2f5f3] sm:text-lg">
-                        Við vinnum með sveitarfélögum, stofnunum og samstarfsaðilum að því að skilgreina og móta
-                        nýju kynslóðina af borgarrýmum. Þessi síða er í uppbyggingu en hér má finna helstu
-                        upplýsingar og tengiliði.
+                        {heroCopy.subtitle}
                     </p>
                 </div>
                 <div class="flex flex-wrap gap-4">
                     <a
-                        href="#project"
+                        href={heroCopy.primaryCta.href}
                         class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#2f3a36] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#f3f6f4] focus-visible:outline-offset-2 focus-visible:outline-[#c6d4cd]"
                     >
-                        Skoða verkefni
+                        {heroCopy.primaryCta.label}
                     </a>
                     <a
-                        href="#contact"
+                        href={heroCopy.secondaryCta.href}
                         class="inline-flex items-center gap-2 rounded-full border border-white/70 px-5 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-white hover:text-white/90"
                     >
-                        Hafðu samband
+                        {heroCopy.secondaryCta.label}
                     </a>
                 </div>
             </div>

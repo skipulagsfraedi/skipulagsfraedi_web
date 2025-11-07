@@ -1,6 +1,8 @@
 ---
+// src/layouts/Layout.astro
 import Navigation from '../components/Navigation.astro';
 import '../styles/global.css';
+import {getSiteFooter} from '../lib/home';
 
 const {
 	title = 'Skipulagsfræðingafélag Íslands',
@@ -8,6 +10,7 @@ const {
 } = Astro.props;
 
 const year = new Date().getFullYear();
+const footerCopy = await getSiteFooter();
 ---
 
 <!doctype html>
@@ -34,14 +37,14 @@ const year = new Date().getFullYear();
 			<main class="flex-1">
 				<slot />
 			</main>
-			<footer class="border-t border-zinc-200 bg-white/60">
-				<div class="mx-auto flex w-full max-w-5xl flex-col gap-2 px-6 py-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-					<p class="tracking-tight">© {year} Skipulagsfræðingafélag Íslands. Allur réttur áskilinn.</p>
-					<a class="transition-colors hover:text-[#4d5c55]" href="mailto:hallo@skipulagsfraedi.is">
-						hallo@skipulagsfraedi.is
-					</a>
-				</div>
-			</footer>
+		<footer class="border-t border-zinc-200 bg-white/60">
+			<div class="mx-auto flex w-full max-w-5xl flex-col gap-2 px-6 py-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+				<p class="tracking-tight">© {year} {footerCopy.notice}</p>
+				<a class="transition-colors hover:text-[#4d5c55]" href={`mailto:${footerCopy.email}`}>
+					{footerCopy.email}
+				</a>
+			</div>
+		</footer>
 		</div>
 	</body>
 </html>
