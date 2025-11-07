@@ -30,18 +30,18 @@ const getExcerpt = (content: PortableTextBlock[]) => {
 <Layout title={pageTitle} description={pageDescription}>
 	<section class="relative isolate overflow-hidden bg-[#87A291] mb-16 md:mb-20 lg:mb-28">
         <div class="absolute inset-0 hidden bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.08)_100%)] lg:block" aria-hidden="true"></div>
-        <div class="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-24 lg:flex-row lg:items-center lg:justify-between">
-            <div class="flex max-w-2xl flex-col gap-6 text-white">
+        <div class="mx-auto flex w-full max-w-6xl flex-col items-center gap-10 px-5 py-16 sm:px-8 sm:py-20 lg:flex-row lg:items-center lg:justify-between lg:gap-16 lg:px-6 lg:py-24">
+            <div class="flex max-w-2xl flex-col items-center gap-6 text-center text-white lg:items-start lg:text-left">
                 <p class="text-xs font-semibold uppercase tracking-[0.35em] text-[#e6edea]">{heroCopy.badge}</p>
                 <div class="space-y-5">
-                    <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">
+                    <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
                         {heroCopy.title}
                     </h1>
                     <p class="text-base leading-relaxed text-[#f2f5f3] sm:text-lg">
                         {heroCopy.subtitle}
                     </p>
                 </div>
-                <div class="flex flex-wrap gap-4">
+                <div class="flex flex-wrap justify-center gap-4 lg:justify-start">
                     <a
                         href={heroCopy.primaryCta.href}
                         class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#2f3a36] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#f3f6f4] focus-visible:outline-offset-2 focus-visible:outline-[#c6d4cd]"
@@ -56,7 +56,7 @@ const getExcerpt = (content: PortableTextBlock[]) => {
                     </a>
                 </div>
             </div>
-            <figure class="mx-auto w-full max-w-[420px] overflow-hidden rounded-2xl bg-white/10 shadow-2xl ring-1 ring-white/40 lg:mx-0 lg:max-w-[520px]">
+            <figure class="mx-auto w-full max-w-[360px] max-h-[70vh] overflow-hidden rounded-2xl bg-white/10 shadow-2xl ring-1 ring-white/40 sm:max-w-[420px] lg:mx-0 lg:max-w-[520px]">
                 <img
                     src={heroImage}
                     alt="Yfirsýn yfir miðbæ Reykjavíkur"

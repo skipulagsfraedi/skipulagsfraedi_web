@@ -21,15 +21,15 @@ const footerCopy = await getSiteFooter();
 		<meta name="generator" content={Astro.generator} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<title>{title}</title>
-		{description && <meta name="description" content={description} />}
+		{description && (<meta name="description" content={description} />)}
 	</head>
 	<body class="min-h-screen bg-zinc-50 text-slate-900 antialiased">
 		<div class="flex min-h-screen flex-col">
 		<header class="relative z-50 border-b border-zinc-200 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/70">
-				<div class="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-4 md:py-8">
-					<a href="/" class="flex items-center gap-3 font-semibold text-slate-700">
-						<img src="/sffi-logo.svg" alt="Skipulagsfræðingafélag Íslands merki" class="h-10 w-auto md:h-14" />
-						<span class="text-lg leading-tight md:text-2xl">Skipulagsfræðingafélag Íslands</span>
+			<div class="mx-auto flex w-full max-w-5xl items-center gap-4 px-6 py-4 md:py-8">
+				<a href="/" class="flex min-w-0 flex-1 items-center gap-3 font-semibold text-slate-700">
+					<img src="/sffi-logo.svg" alt="Skipulagsfræðingafélag Íslands merki" class="h-10 w-auto flex-shrink-0 md:h-14" />
+					<span class="block text-lg leading-tight md:text-2xl">Skipulagsfræðinga&shy;félag Íslands</span>
 					</a>
 					<Navigation />
 				</div>
