@@ -41,7 +41,6 @@ type FrontpageContentDocument = {
   newsTitle?: string;
   newsDescription?: string;
   newsReadMoreLabel?: string;
-  newsEmptyState?: string;
   newsCta?: SanityCtaInput;
   teamTitle?: string;
   teamDescription?: string;
@@ -75,7 +74,6 @@ export type FrontpageNews = {
   title: string;
   description: string;
   readMoreLabel: string;
-  emptyState: string;
   cta: Cta;
 };
 
@@ -137,7 +135,6 @@ const FRONT_PAGE_QUERY = `*[_type == "frontpageContent"][0]{
   newsTitle,
   newsDescription,
   newsReadMoreLabel,
-  newsEmptyState,
   newsCta {
     label,
     href
@@ -183,7 +180,6 @@ const DEFAULT_FRONT_PAGE: FrontpageContent = {
     title: 'Nýjustu tíðindi úr starfseminni',
     description: 'Lestu um verkefni, viðburði og sjónarmið skipulagsfræðinga.',
     readMoreLabel: 'Lesa meira →',
-    emptyState: 'Engar fréttir hafa verið birtar enn, en kíktu fljótlega aftur.',
     cta: {
       label: 'Sjá allar fréttir',
       href: '/frettir',
@@ -329,7 +325,6 @@ const buildNews = (doc: FrontpageContentDocument | null): FrontpageNews => ({
     doc?.newsReadMoreLabel,
     DEFAULT_FRONT_PAGE.news.readMoreLabel,
   ),
-  emptyState: withFallback(doc?.newsEmptyState, DEFAULT_FRONT_PAGE.news.emptyState),
   cta: resolveCta(doc?.newsCta, DEFAULT_FRONT_PAGE.news.cta),
 });
 
@@ -393,4 +388,3 @@ const withFallback = (value: string | undefined, fallback: string): string => {
   const trimmed = value?.trim();
   return trimmed && trimmed.length > 0 ? trimmed : fallback;
 };
-
