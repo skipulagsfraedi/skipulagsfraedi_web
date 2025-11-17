@@ -25,34 +25,62 @@ type Cta = {
   href: string;
 };
 
-type FrontpagePillarInput = {
+// Section input types from Sanity
+type HeroSectionInput = {
+  _type: 'heroSection';
+  badge?: string;
+  title?: string;
+  subtitle?: string;
+  image?: SanityImageWithAlt;
+  primaryCta?: SanityCtaInput;
+  secondaryCta?: SanityCtaInput;
+};
+
+type NewsSectionInput = {
+  _type: 'newsSection';
+  badge?: string;
+  title?: string;
+  description?: string;
+  readMoreLabel?: string;
+  cta?: SanityCtaInput;
+};
+
+type TeamSectionInput = {
+  _type: 'teamSection';
   title?: string;
   description?: string;
 };
 
+type PillarItemInput = {
+  title?: string;
+  description?: string;
+};
+
+type PillarsSectionInput = {
+  _type: 'pillarsSection';
+  badge?: string;
+  title?: string;
+  description?: string;
+  items?: PillarItemInput[];
+};
+
+type ContactSectionInput = {
+  _type: 'contactSection';
+  title?: string;
+  lead?: string;
+  email?: string;
+  note?: string;
+};
+
+type FrontpageSectionInput =
+  | HeroSectionInput
+  | NewsSectionInput
+  | TeamSectionInput
+  | PillarsSectionInput
+  | ContactSectionInput;
+
 type FrontpageContentDocument = {
-  heroBadge?: string;
-  heroTitle?: string;
-  heroSubtitle?: string;
-  heroImage?: SanityImageWithAlt;
-  heroPrimaryCta?: SanityCtaInput;
-  heroSecondaryCta?: SanityCtaInput;
-  newsBadge?: string;
-  newsTitle?: string;
-  newsDescription?: string;
-  newsReadMoreLabel?: string;
-  newsCta?: SanityCtaInput;
-  teamTitle?: string;
-  teamDescription?: string;
-  pillarsBadge?: string;
-  pillarsTitle?: string;
-  pillarsDescription?: string;
-  pillars?: FrontpagePillarInput[];
-  contactTitle?: string;
-  contactLead?: string;
-  contactEmailLabel?: string;
-  contactEmail?: string;
-  contactNote?: string;
+  sections?: FrontpageSectionInput[];
 };
 
 type SiteSettingsDocument = {
@@ -60,7 +88,9 @@ type SiteSettingsDocument = {
   footerEmail?: string;
 };
 
+// Processed section types
 export type FrontpageHero = {
+  _type: 'heroSection';
   badge: string;
   title: string;
   subtitle: string;
@@ -70,6 +100,7 @@ export type FrontpageHero = {
 };
 
 export type FrontpageNews = {
+  _type: 'newsSection';
   badge: string;
   title: string;
   description: string;
@@ -78,6 +109,7 @@ export type FrontpageNews = {
 };
 
 export type FrontpageTeam = {
+  _type: 'teamSection';
   title: string;
   description: string;
 };
@@ -88,6 +120,7 @@ export type FrontpagePillarItem = {
 };
 
 export type FrontpagePillars = {
+  _type: 'pillarsSection';
   badge: string;
   title: string;
   description: string;
@@ -95,20 +128,21 @@ export type FrontpagePillars = {
 };
 
 export type FrontpageContact = {
+  _type: 'contactSection';
   title: string;
   lead: string;
-  emailLabel: string;
   email: string;
   note: string;
 };
 
-export type FrontpageContent = {
-  hero: FrontpageHero;
-  news: FrontpageNews;
-  team: FrontpageTeam;
-  pillars: FrontpagePillars;
-  contact: FrontpageContact;
-};
+export type FrontpageSection =
+  | FrontpageHero
+  | FrontpageNews
+  | FrontpageTeam
+  | FrontpagePillars
+  | FrontpageContact;
+
+export type FrontpageContent = FrontpageSection[];
 
 export type FooterCopy = {
   notice: string;
@@ -116,43 +150,55 @@ export type FooterCopy = {
 };
 
 const FRONT_PAGE_QUERY = `*[_type == "frontpageContent"][0]{
-  heroBadge,
-  heroTitle,
-  heroSubtitle,
-  heroImage {
-    asset,
-    alt
-  },
-  heroPrimaryCta {
-    label,
-    href
-  },
-  heroSecondaryCta {
-    label,
-    href
-  },
-  newsBadge,
-  newsTitle,
-  newsDescription,
-  newsReadMoreLabel,
-  newsCta {
-    label,
-    href
-  },
-  teamTitle,
-  teamDescription,
-  pillarsBadge,
-  pillarsTitle,
-  pillarsDescription,
-  pillars[] {
-    title,
-    description
-  },
-  contactTitle,
-  contactLead,
-  contactEmailLabel,
-  contactEmail,
-  contactNote
+  sections[] {
+    _type,
+    _type == "heroSection" => {
+      badge,
+      title,
+      subtitle,
+      image {
+        asset,
+        alt
+      },
+      primaryCta {
+        label,
+        href
+      },
+      secondaryCta {
+        label,
+        href
+      }
+    },
+    _type == "newsSection" => {
+      badge,
+      title,
+      description,
+      readMoreLabel,
+      cta {
+        label,
+        href
+      }
+    },
+    _type == "teamSection" => {
+      title,
+      description
+    },
+    _type == "pillarsSection" => {
+      badge,
+      title,
+      description,
+      items[] {
+        title,
+        description
+      }
+    },
+    _type == "contactSection" => {
+      title,
+      lead,
+      email,
+      note
+    }
+  }
 }`;
 
 const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
@@ -160,66 +206,68 @@ const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
   footerEmail
 }`;
 
-const DEFAULT_FRONT_PAGE: FrontpageContent = {
-  hero: {
-    badge: 'Vefur í vinnslu',
-    title: 'Skipulagsfræði skapar sveigjanlegar lausnir fyrir íslenskt skipulag',
-    subtitle:
-      'Við vinnum með sveitarfélögum, stofnunum og samstarfsaðilum að því að skilgreina og móta nýju kynslóðina af borgarrýmum. Þessi síða er í uppbyggingu en hér má finna helstu upplýsingar og tengiliði.',
-    primaryCta: {
-      label: 'Skoða verkefni',
-      href: '#project',
+// Default values for each section type
+const DEFAULT_HERO: Omit<FrontpageHero, '_type'> = {
+  badge: 'Vefur í vinnslu',
+  title: 'Skipulagsfræði skapar sveigjanlegar lausnir fyrir íslenskt skipulag',
+  subtitle:
+    'Við vinnum með sveitarfélögum, stofnunum og samstarfsaðilum að því að skilgreina og móta nýju kynslóðina af borgarrýmum. Þessi síða er í uppbyggingu en hér má finna helstu upplýsingar og tengiliði.',
+  primaryCta: {
+    label: 'Skoða verkefni',
+    href: '#project',
+  },
+  secondaryCta: {
+    label: 'Hafðu samband',
+    href: '#contact',
+  },
+};
+
+const DEFAULT_NEWS: Omit<FrontpageNews, '_type'> = {
+  badge: 'Fréttir',
+  title: 'Nýjustu tíðindi úr starfseminni',
+  description: 'Lestu um verkefni, viðburði og sjónarmið skipulagsfræðinga.',
+  readMoreLabel: 'Lesa meira →',
+  cta: {
+    label: 'Sjá allar fréttir',
+    href: '/frettir',
+  },
+};
+
+const DEFAULT_TEAM: Omit<FrontpageTeam, '_type'> = {
+  title: 'Teymið',
+  description:
+    'Við búum saman til leiðir sem byggja á rannsóknum, innblæstri og samtali við fólkið sem býr í hverfinu. Kynntu þér starfsfólkið og samstarfsaðila fljótlega hér.',
+};
+
+const DEFAULT_PILLARS: Omit<FrontpagePillars, '_type'> = {
+  badge: 'Skipulag í forgrunni',
+  title: 'Hvernig við mótum framtíðarrými',
+  description:
+    'Við unnum af alúð að lausnum sem gera byggðir að betri stöðum. Hér eru þrír lykilþættir sem leiða vinnuna áfram.',
+  items: [
+    {
+      title: 'Gagnadrifið greiningarferli',
+      description:
+        'Við lesum í gögnin um hvern stað og kortleggjum tækifæri til að styrkja samfélagið og hagræna innviði.',
     },
-    secondaryCta: {
-      label: 'Hafðu samband',
-      href: '#contact',
+    {
+      title: 'Samráð og samvinna',
+      description:
+        'Við leiðum samtal milli íbúa, stofnana og hagsmunaaðila til að tryggja að lausnirnar séu sameiginleg framtíðarsýn.',
     },
-  },
-  news: {
-    badge: 'Fréttir',
-    title: 'Nýjustu tíðindi úr starfseminni',
-    description: 'Lestu um verkefni, viðburði og sjónarmið skipulagsfræðinga.',
-    readMoreLabel: 'Lesa meira →',
-    cta: {
-      label: 'Sjá allar fréttir',
-      href: '/frettir',
+    {
+      title: 'Árangur sem standast próf',
+      description:
+        'Við fylgjum verkefnum eftir með mælikvörðum sem sýna raunveruleg áhrif á lífsgæði og umhverfi til lengri tíma.',
     },
-  },
-  team: {
-    title: 'Teymið',
-    description:
-      'Við búum saman til leiðir sem byggja á rannsóknum, innblæstri og samtali við fólkið sem býr í hverfinu. Kynntu þér starfsfólkið og samstarfsaðila fljótlega hér.',
-  },
-  pillars: {
-    badge: 'Skipulag í forgrunni',
-    title: 'Hvernig við mótum framtíðarrými',
-    description:
-      'Við unnum af alúð að lausnum sem gera byggðir að betri stöðum. Hér eru þrír lykilþættir sem leiða vinnuna áfram.',
-    items: [
-      {
-        title: 'Gagnadrifið greiningarferli',
-        description:
-          'Við lesum í gögnin um hvern stað og kortleggjum tækifæri til að styrkja samfélagið og hagræna innviði.',
-      },
-      {
-        title: 'Samráð og samvinna',
-        description:
-          'Við leiðum samtal milli íbúa, stofnana og hagsmunaaðila til að tryggja að lausnirnar séu sameiginleg framtíðarsýn.',
-      },
-      {
-        title: 'Árangur sem standast próf',
-        description:
-          'Við fylgjum verkefnum eftir með mælikvörðum sem sýna raunveruleg áhrif á lífsgæði og umhverfi til lengri tíma.',
-      },
-    ],
-  },
-  contact: {
-    title: 'Hafðu samband',
-    lead: 'Best er að senda okkur línu á',
-    emailLabel: 'hallo@skipulagsfraedi.is',
-    email: 'hallo@skipulagsfraedi.is',
-    note: 'Við svarum fljótt og erum ávallt opin fyrir samtali um nýjar hugmyndir.',
-  },
+  ],
+};
+
+const DEFAULT_CONTACT: Omit<FrontpageContact, '_type'> = {
+  title: 'Hafðu samband',
+  lead: 'Best er að senda okkur línu á',
+  email: 'hallo@skipulagsfraedi.is',
+  note: 'Við svarum fljótt og erum ávallt opin fyrir samtali um nýjar hugmyndir.',
 };
 
 const DEFAULT_FOOTER: FooterCopy = {
@@ -258,14 +306,25 @@ export const getFrontpageDocument = async (): Promise<FrontpageContentDocument |
 
 export const getFrontpageContent = async (): Promise<FrontpageContent> => {
   const doc = await getFrontpageDocument();
+  const sections = doc?.sections || [];
 
-  return {
-    hero: buildHero(doc),
-    news: buildNews(doc),
-    team: buildTeam(doc),
-    pillars: buildPillars(doc),
-    contact: buildContact(doc),
-  };
+  return sections.map((section) => {
+    switch (section._type) {
+      case 'heroSection':
+        return buildHero(section);
+      case 'newsSection':
+        return buildNews(section);
+      case 'teamSection':
+        return buildTeam(section);
+      case 'pillarsSection':
+        return buildPillars(section);
+      case 'contactSection':
+        return buildContact(section);
+      default:
+        // Fallback to hero if unknown type
+        return buildHero({_type: 'heroSection'});
+    }
+  });
 };
 
 export const getSiteSettings = async (): Promise<SiteSettingsDocument | null> => {
@@ -305,37 +364,34 @@ export const getSiteFooter = async (): Promise<FooterCopy> => {
   };
 };
 
-const buildHero = (doc: FrontpageContentDocument | null): FrontpageHero => ({
-  badge: withFallback(doc?.heroBadge, DEFAULT_FRONT_PAGE.hero.badge),
-  title: withFallback(doc?.heroTitle, DEFAULT_FRONT_PAGE.hero.title),
-  subtitle: withFallback(doc?.heroSubtitle, DEFAULT_FRONT_PAGE.hero.subtitle),
-  image: doc?.heroImage || undefined,
-  primaryCta: resolveCta(doc?.heroPrimaryCta, DEFAULT_FRONT_PAGE.hero.primaryCta),
-  secondaryCta: resolveCta(
-    doc?.heroSecondaryCta,
-    DEFAULT_FRONT_PAGE.hero.secondaryCta,
-  ),
+const buildHero = (input: HeroSectionInput): FrontpageHero => ({
+  _type: 'heroSection',
+  badge: withFallback(input.badge, DEFAULT_HERO.badge),
+  title: withFallback(input.title, DEFAULT_HERO.title),
+  subtitle: withFallback(input.subtitle, DEFAULT_HERO.subtitle),
+  image: input.image || undefined,
+  primaryCta: resolveCta(input.primaryCta, DEFAULT_HERO.primaryCta),
+  secondaryCta: resolveCta(input.secondaryCta, DEFAULT_HERO.secondaryCta),
 });
 
-const buildNews = (doc: FrontpageContentDocument | null): FrontpageNews => ({
-  badge: withFallback(doc?.newsBadge, DEFAULT_FRONT_PAGE.news.badge),
-  title: withFallback(doc?.newsTitle, DEFAULT_FRONT_PAGE.news.title),
-  description: withFallback(doc?.newsDescription, DEFAULT_FRONT_PAGE.news.description),
-  readMoreLabel: withFallback(
-    doc?.newsReadMoreLabel,
-    DEFAULT_FRONT_PAGE.news.readMoreLabel,
-  ),
-  cta: resolveCta(doc?.newsCta, DEFAULT_FRONT_PAGE.news.cta),
+const buildNews = (input: NewsSectionInput): FrontpageNews => ({
+  _type: 'newsSection',
+  badge: withFallback(input.badge, DEFAULT_NEWS.badge),
+  title: withFallback(input.title, DEFAULT_NEWS.title),
+  description: withFallback(input.description, DEFAULT_NEWS.description),
+  readMoreLabel: withFallback(input.readMoreLabel, DEFAULT_NEWS.readMoreLabel),
+  cta: resolveCta(input.cta, DEFAULT_NEWS.cta),
 });
 
-const buildTeam = (doc: FrontpageContentDocument | null): FrontpageTeam => ({
-  title: withFallback(doc?.teamTitle, DEFAULT_FRONT_PAGE.team.title),
-  description: withFallback(doc?.teamDescription, DEFAULT_FRONT_PAGE.team.description),
+const buildTeam = (input: TeamSectionInput): FrontpageTeam => ({
+  _type: 'teamSection',
+  title: withFallback(input.title, DEFAULT_TEAM.title),
+  description: withFallback(input.description, DEFAULT_TEAM.description),
 });
 
-const buildPillars = (doc: FrontpageContentDocument | null): FrontpagePillars => {
-  const fallbackItems = DEFAULT_FRONT_PAGE.pillars.items;
-  const docPillars = doc?.pillars;
+const buildPillars = (input: PillarsSectionInput): FrontpagePillars => {
+  const fallbackItems = DEFAULT_PILLARS.items;
+  const docPillars = input.items;
   const customPillars = Array.isArray(docPillars) ? docPillars : [];
   const items =
     customPillars.length > 0
@@ -349,25 +405,20 @@ const buildPillars = (doc: FrontpageContentDocument | null): FrontpagePillars =>
       : fallbackItems;
 
   return {
-    badge: withFallback(doc?.pillarsBadge, DEFAULT_FRONT_PAGE.pillars.badge),
-    title: withFallback(doc?.pillarsTitle, DEFAULT_FRONT_PAGE.pillars.title),
-    description: withFallback(
-      doc?.pillarsDescription,
-      DEFAULT_FRONT_PAGE.pillars.description,
-    ),
+    _type: 'pillarsSection',
+    badge: withFallback(input.badge, DEFAULT_PILLARS.badge),
+    title: withFallback(input.title, DEFAULT_PILLARS.title),
+    description: withFallback(input.description, DEFAULT_PILLARS.description),
     items,
   };
 };
 
-const buildContact = (doc: FrontpageContentDocument | null): FrontpageContact => ({
-  title: withFallback(doc?.contactTitle, DEFAULT_FRONT_PAGE.contact.title),
-  lead: withFallback(doc?.contactLead, DEFAULT_FRONT_PAGE.contact.lead),
-  emailLabel: withFallback(
-    doc?.contactEmailLabel,
-    DEFAULT_FRONT_PAGE.contact.emailLabel,
-  ),
-  email: withFallback(doc?.contactEmail, DEFAULT_FRONT_PAGE.contact.email),
-  note: withFallback(doc?.contactNote, DEFAULT_FRONT_PAGE.contact.note),
+const buildContact = (input: ContactSectionInput): FrontpageContact => ({
+  _type: 'contactSection',
+  title: withFallback(input.title, DEFAULT_CONTACT.title),
+  lead: withFallback(input.lead, DEFAULT_CONTACT.lead),
+  email: withFallback(input.email, DEFAULT_CONTACT.email),
+  note: withFallback(input.note, DEFAULT_CONTACT.note),
 });
 
 const resolveCta = (
