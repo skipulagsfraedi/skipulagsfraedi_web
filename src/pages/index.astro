@@ -2,7 +2,7 @@
 // src/pages/index.astro
 import type {PortableTextBlock} from '@portabletext/types';
 import Layout from '../layouts/Layout.astro';
-import {getHomeHero} from '../lib/home';
+import {getFrontpageContent} from '../lib/home';
 import {getLatestNews, getNewsPermalink, toPlainText} from '../lib/news';
 import {urlForImage} from '../lib/sanity';
 
@@ -12,11 +12,37 @@ const pageDescription = 'Skipulagsfræði veitir lausnir sem móta lifandi og sj
 const latestNews = await getLatestNews(3);
 const hasNews = latestNews.length > 0;
 
-const heroCopy = await getHomeHero();
-const heroImageUrl = heroCopy.image
-	? urlForImage(heroCopy.image).width(1040).height(728).url()
+const frontpageContent = await getFrontpageContent();
+const {hero, news, team, pillars, contact} = frontpageContent;
+
+const heroImageUrl = hero.image
+	? urlForImage(hero.image).width(1040).height(728).url()
 	: undefined;
-const heroImageAlt = heroCopy.image?.alt || 'Yfirsýn yfir miðbæ Reykjavíkur';
+const heroImageAlt = hero.image?.alt || 'Yfirsýn yfir miðbæ Reykjavíkur';
+
+const pillarIcons = [
+	(
+		<svg class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<path d="M4 19h16" />
+			<path d="M5 17l.8-6.4A2 2 0 0 1 7.8 9h8.4a2 2 0 0 1 1.99 1.6L19 17" />
+			<path d="M9 9V5a3 3 0 0 1 6 0v4" />
+		</svg>
+	),
+	(
+		<svg class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<path d="M12 20V10" />
+			<path d="M18 20V4" />
+			<path d="M6 20v-6" />
+			<path d="M3 20h18" />
+		</svg>
+	),
+	(
+		<svg class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<path d="M3 17l6-6 4 4 8-8" />
+			<path d="M14 7h7v7" />
+		</svg>
+	),
+];
 
 const formatDate = (value: string) =>
 	new Date(value).toLocaleDateString('is-IS', {
@@ -36,27 +62,27 @@ const getExcerpt = (content: PortableTextBlock[]) => {
         <div class="pointer-events-none absolute inset-0 hidden bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.08)_100%)] lg:block" aria-hidden="true"></div>
         <div class="mx-auto flex w-full max-w-6xl flex-col items-center gap-10 px-5 py-16 sm:px-8 sm:py-20 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
             <div class="flex max-w-2xl flex-col items-center gap-6 text-center text-white lg:items-start lg:text-left">
-                <p class="text-xs font-semibold uppercase tracking-[0.35em] text-[#e6edea]">{heroCopy.badge}</p>
+                <p class="text-xs font-semibold uppercase tracking-[0.35em] text-[#e6edea]">{hero.badge}</p>
                 <div class="space-y-5">
                     <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
-                        {heroCopy.title}
+                        {hero.title}
                     </h1>
                     <p class="text-base leading-relaxed text-[#f2f5f3] sm:text-lg">
-                        {heroCopy.subtitle}
+                        {hero.subtitle}
                     </p>
                 </div>
                 <div class="flex flex-wrap justify-center gap-4 lg:justify-start">
                     <a
-                        href={heroCopy.primaryCta.href}
+                        href={hero.primaryCta.href}
                         class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#2f3a36] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#f3f6f4] focus-visible:outline-offset-2 focus-visible:outline-[#c6d4cd]"
                     >
-                        {heroCopy.primaryCta.label}
+                        {hero.primaryCta.label}
                     </a>
                     <a
-                        href={heroCopy.secondaryCta.href}
+                        href={hero.secondaryCta.href}
                         class="inline-flex items-center gap-2 rounded-full border border-white/70 px-5 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-white hover:text-white/90"
                     >
-                        {heroCopy.secondaryCta.label}
+                        {hero.secondaryCta.label}
                     </a>
                 </div>
             </div>
@@ -78,10 +104,10 @@ const getExcerpt = (content: PortableTextBlock[]) => {
 	<section id="news" class="mx-auto w-full max-w-5xl px-6 pb-24">
 		<div class="flex flex-col gap-10 rounded-3xl border border-zinc-200 bg-white px-6 py-10">
 			<div class="flex flex-col gap-3">
-				<p class="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">Fréttir</p>
-				<h2 class="text-xl font-semibold text-slate-900">Nýjustu tíðindi úr starfseminni</h2>
+				<p class="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">{news.badge}</p>
+				<h2 class="text-xl font-semibold text-slate-900">{news.title}</h2>
 				<p class="text-sm text-slate-600">
-					Lestu um verkefni, viðburði og sjónarmið skipulagsfræðinga.
+					{news.description}
 				</p>
 			</div>
 			{hasNews && (
@@ -101,7 +127,7 @@ const getExcerpt = (content: PortableTextBlock[]) => {
 								</div>
 								<p class="text-sm leading-relaxed text-slate-600">{getExcerpt(post.content)}</p>
 								<span class="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-[#4d5c55]">
-									Lesa meira &rarr;
+									{news.readMoreLabel}
 								</span>
 							</a>
 						</li>
@@ -110,15 +136,15 @@ const getExcerpt = (content: PortableTextBlock[]) => {
 			)}
 			{!hasNews && (
 				<div class="rounded-2xl border border-dashed border-zinc-200 p-6 text-sm text-slate-500">
-					Engar fréttir hafa verið birtar enn, en kíktu fljótlega aftur.
+					{news.emptyState}
 				</div>
 			)}
 			<div>
 				<a
-					href="/frettir"
+					href={news.cta.href}
 					class="inline-flex items-center gap-2 rounded-full border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-500 hover:text-slate-900"
 				>
-					Sjá allar fréttir
+					{news.cta.label}
 				</a>
 			</div>
 		</div>
@@ -126,10 +152,9 @@ const getExcerpt = (content: PortableTextBlock[]) => {
 
 	<section id="team" class="mx-auto w-full max-w-5xl px-6 pb-24">
 		<div class="rounded-3xl border border-zinc-200 bg-white px-6 py-10 text-sm text-slate-600">
-			<h2 class="text-xl font-semibold text-slate-900">Teymið</h2>
+			<h2 class="text-xl font-semibold text-slate-900">{team.title}</h2>
 			<p class="mt-4 max-w-2xl">
-				Við búum saman til leiðir sem byggja á rannsóknum, innblæstri og samtali við fólkið sem
-				býr í hverfinu. Kynntu þér starfsfólkið og samstarfsaðila fljótlega hér.
+				{team.description}
 			</p>
 		</div>
 	</section>
@@ -137,69 +162,44 @@ const getExcerpt = (content: PortableTextBlock[]) => {
 	<section class="bg-[#87A291] mb-24">
 		<div class="mx-auto flex w-full max-w-5xl flex-col gap-12 px-6 py-20 text-white">
 			<div class="space-y-4 text-center">
-				<p class="text-xs font-semibold uppercase tracking-[0.35em] text-white/70">Skipulag í forgrunni</p>
-				<h2 class="text-2xl font-semibold sm:text-3xl">Hvernig við mótum framtíðarrými</h2>
+				<p class="text-xs font-semibold uppercase tracking-[0.35em] text-white/70">{pillars.badge}</p>
+				<h2 class="text-2xl font-semibold sm:text-3xl">{pillars.title}</h2>
 				<p class="mx-auto max-w-2xl text-sm text-white/80 sm:text-base">
-					Við unnum af alúð að lausnum sem gera byggðir að betri stöðum. Hér eru þrír lykilþættir sem leiða vinnuna áfram.
+					{pillars.description}
 				</p>
 			</div>
 			<ul class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-				<li class="flex flex-col gap-4 rounded-2xl bg-white/5 p-6 shadow-sm shadow-black/5 ring-1 ring-white/10">
-					<span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/15">
-						<svg class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-							<path d="M4 19h16" />
-							<path d="M5 17l.8-6.4A2 2 0 0 1 7.8 9h8.4a2 2 0 0 1 1.99 1.6L19 17" />
-							<path d="M9 9V5a3 3 0 0 1 6 0v4" />
-						</svg>
-					</span>
-					<div class="space-y-2">
-						<h3 class="text-lg font-semibold">Gagnadrifið greiningarferli</h3>
-						<p class="text-sm text-white/80">
-							Við lesum í gögnin um hvern stað og kortleggjum tækifæri til að styrkja samfélagið og hagræna innviði.
-						</p>
-					</div>
-				</li>
-				<li class="flex flex-col gap-4 rounded-2xl bg-white/5 p-6 shadow-sm shadow-black/5 ring-1 ring-white/10">
-					<span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/15">
-						<svg class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-							<path d="M12 20V10" />
-							<path d="M18 20V4" />
-							<path d="M6 20v-6" />
-							<path d="M3 20h18" />
-						</svg>
-					</span>
-					<div class="space-y-2">
-						<h3 class="text-lg font-semibold">Samráð og samvinna</h3>
-						<p class="text-sm text-white/80">
-							Við leiðum samtal milli íbúa, stofnana og hagsmunaaðila til að tryggja að lausnirnar séu sameiginleg framtíðarsýn.
-						</p>
-					</div>
-				</li>
-				<li class="flex flex-col gap-4 rounded-2xl bg-white/5 p-6 shadow-sm shadow-black/5 ring-1 ring-white/10">
-					<span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/15">
-						<svg class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-							<path d="M3 17l6-6 4 4 8-8" />
-							<path d="M14 7h7v7" />
-						</svg>
-					</span>
-					<div class="space-y-2">
-						<h3 class="text-lg font-semibold">Árangur sem standast próf</h3>
-						<p class="text-sm text-white/80">
-							Við fylgjum verkefnum eftir með mælikvörðum sem sýna raunveruleg áhrif á lífsgæði og umhverfi til lengri tíma.
-						</p>
-					</div>
-				</li>
+				{pillars.items.map((item, index) => (
+					<li class="flex flex-col gap-4 rounded-2xl bg-white/5 p-6 shadow-sm shadow-black/5 ring-1 ring-white/10">
+						<span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/15">
+							{pillarIcons[index % pillarIcons.length]}
+						</span>
+						<div class="space-y-2">
+							<h3 class="text-lg font-semibold">{item.title}</h3>
+							<p class="text-sm text-white/80">
+								{item.description}
+							</p>
+						</div>
+					</li>
+				))}
 			</ul>
 		</div>
 	</section>
 
 	<section id="contact" class="mx-auto w-full max-w-5xl px-6 pb-32">
 		<div class="rounded-3xl border border-zinc-200 bg-white px-6 py-10 text-sm text-slate-600">
-			<h2 class="text-xl font-semibold text-slate-900">Hafðu samband</h2>
+			<h2 class="text-xl font-semibold text-slate-900">{contact.title}</h2>
 			<p class="mt-4 max-w-xl">
-				Best er að senda okkur línu á
-				<a class="ml-1 font-semibold text-[#4d5c55] transition-colors hover:text-[#2f3a36]" href="mailto:hallo@skipulagsfraedi.is">hallo@skipulagsfraedi.is</a>.
-				Við svarum fljótt og erum ávallt opin fyrir samtali um nýjar hugmyndir.
+				{contact.lead}{' '}
+				<a class="font-semibold text-[#4d5c55] transition-colors hover:text-[#2f3a36]" href={`mailto:${contact.email}`}>
+					{contact.emailLabel}
+				</a>
+				{contact.note ? (
+					<>
+						{' '}
+						{contact.note}
+					</>
+				) : null}
 			</p>
 		</div>
 	</section>
