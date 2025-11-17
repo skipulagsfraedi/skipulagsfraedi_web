@@ -20,28 +20,10 @@ const heroImageUrl = hero.image
 	: undefined;
 const heroImageAlt = hero.image?.alt || 'Yfirsýn yfir miðbæ Reykjavíkur';
 
-const pillarIcons = [
-	(
-		<svg class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-			<path d="M4 19h16" />
-			<path d="M5 17l.8-6.4A2 2 0 0 1 7.8 9h8.4a2 2 0 0 1 1.99 1.6L19 17" />
-			<path d="M9 9V5a3 3 0 0 1 6 0v4" />
-		</svg>
-	),
-	(
-		<svg class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-			<path d="M12 20V10" />
-			<path d="M18 20V4" />
-			<path d="M6 20v-6" />
-			<path d="M3 20h18" />
-		</svg>
-	),
-	(
-		<svg class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-			<path d="M3 17l6-6 4 4 8-8" />
-			<path d="M14 7h7v7" />
-		</svg>
-	),
+const pillarIconPaths = [
+	['M4 19h16', 'M5 17l.8-6.4A2 2 0 0 1 7.8 9h8.4a2 2 0 0 1 1.99 1.6L19 17', 'M9 9V5a3 3 0 0 1 6 0v4'],
+	['M12 20V10', 'M18 20V4', 'M6 20v-6', 'M3 20h18'],
+	['M3 17l6-6 4 4 8-8', 'M14 7h7v7'],
 ];
 
 const formatDate = (value: string) =>
@@ -169,19 +151,26 @@ const getExcerpt = (content: PortableTextBlock[]) => {
 				</p>
 			</div>
 			<ul class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-				{pillars.items.map((item, index) => (
-					<li class="flex flex-col gap-4 rounded-2xl bg-white/5 p-6 shadow-sm shadow-black/5 ring-1 ring-white/10">
-						<span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/15">
-							{pillarIcons[index % pillarIcons.length]}
-						</span>
-						<div class="space-y-2">
-							<h3 class="text-lg font-semibold">{item.title}</h3>
-							<p class="text-sm text-white/80">
-								{item.description}
-							</p>
-						</div>
-					</li>
-				))}
+				{pillars.items.map((item, index) => {
+					const iconPaths = pillarIconPaths[index % pillarIconPaths.length];
+					return (
+						<li class="flex flex-col gap-4 rounded-2xl bg-white/5 p-6 shadow-sm shadow-black/5 ring-1 ring-white/10">
+							<span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/15">
+								<svg class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+									{iconPaths.map((d) => (
+										<path d={d} />
+									))}
+								</svg>
+							</span>
+							<div class="space-y-2">
+								<h3 class="text-lg font-semibold">{item.title}</h3>
+								<p class="text-sm text-white/80">
+									{item.description}
+								</p>
+							</div>
+						</li>
+					);
+				})}
 			</ul>
 		</div>
 	</section>
