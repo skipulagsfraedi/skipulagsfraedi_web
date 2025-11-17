@@ -130,7 +130,7 @@ const childSummaries = childPages.map((child) => {
       <nav aria-label="Brauðmolaslóð" class="text-xs uppercase tracking-[0.25em] text-slate-400">
         <ol class="flex flex-wrap items-center gap-2">
           {breadcrumbs.map((item, index) => (
-            <li class="flex items-center gap-2" key={item.path}>
+            <li class="flex items-center gap-2">
               {index < breadcrumbs.length - 1 ? (
                 <a class="transition-colors hover:text-[#4d5c55]" href={item.path}>
                   {item.label}
@@ -169,7 +169,6 @@ const childSummaries = childPages.map((child) => {
         <ul class="mt-6 grid gap-4 md:grid-cols-2">
           {childSummaries.map((child) => (
             <li
-              key={child._id}
               class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
             >
               <a href={child.path} class="flex h-full flex-col gap-3">

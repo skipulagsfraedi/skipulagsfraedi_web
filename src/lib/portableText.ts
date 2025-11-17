@@ -1,8 +1,8 @@
 import {toHTML, type PortableTextMarkComponent} from '@portabletext/to-html';
-import type {PortableTextBlock} from '@portabletext/types';
+import type {PortableTextBlock, TypedObject} from '@portabletext/types';
 import {urlForImage} from './sanity';
 
-type LinkValue = {
+type LinkValue = TypedObject & {
   href?: string;
 };
 

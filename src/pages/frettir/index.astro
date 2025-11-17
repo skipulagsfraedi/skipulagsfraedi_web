@@ -1,4 +1,5 @@
 ---
+import type {PortableTextBlock} from '@portabletext/types';
 import Layout from '../../layouts/Layout.astro';
 import {getAllNews, getNewsPermalink, toPlainText} from '../../lib/news';
 
@@ -15,7 +16,7 @@ const formatDate = (value: string) =>
 		day: 'numeric',
 	});
 
-const getExcerpt = (content) => {
+const getExcerpt = (content: PortableTextBlock[]) => {
 	const text = toPlainText(content);
 	return text.length > 220 ? `${text.slice(0, 217)}…` : text;
 };
@@ -37,7 +38,6 @@ const getExcerpt = (content) => {
 			<ul class="space-y-6">
 				{posts.map((post) => (
 					<li
-						key={post._id}
 						class="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
 					>
 							<a href={getNewsPermalink(post)} class="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
