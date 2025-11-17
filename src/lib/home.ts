@@ -73,13 +73,13 @@ type ContactSectionInput = {
 };
 
 type FrontpageSectionInput =
-  | HeroSectionInput
-  | NewsSectionInput
   | TeamSectionInput
   | PillarsSectionInput
   | ContactSectionInput;
 
 type FrontpageContentDocument = {
+  hero?: HeroSectionInput;
+  news?: NewsSectionInput;
   sections?: FrontpageSectionInput[];
 };
 
@@ -136,13 +136,15 @@ export type FrontpageContact = {
 };
 
 export type FrontpageSection =
-  | FrontpageHero
-  | FrontpageNews
   | FrontpageTeam
   | FrontpagePillars
   | FrontpageContact;
 
-export type FrontpageContent = FrontpageSection[];
+export type FrontpageContent = {
+  hero: FrontpageHero;
+  news?: FrontpageNews;
+  sections: FrontpageSection[];
+};
 
 export type FooterCopy = {
   notice: string;
@@ -150,35 +152,35 @@ export type FooterCopy = {
 };
 
 const FRONT_PAGE_QUERY = `*[_type == "frontpageContent"][0]{
+  hero {
+    badge,
+    title,
+    subtitle,
+    image {
+      asset,
+      alt
+    },
+    primaryCta {
+      label,
+      href
+    },
+    secondaryCta {
+      label,
+      href
+    }
+  },
+  news {
+    badge,
+    title,
+    description,
+    readMoreLabel,
+    cta {
+      label,
+      href
+    }
+  },
   sections[] {
     _type,
-    _type == "heroSection" => {
-      badge,
-      title,
-      subtitle,
-      image {
-        asset,
-        alt
-      },
-      primaryCta {
-        label,
-        href
-      },
-      secondaryCta {
-        label,
-        href
-      }
-    },
-    _type == "newsSection" => {
-      badge,
-      title,
-      description,
-      readMoreLabel,
-      cta {
-        label,
-        href
-      }
-    },
     _type == "teamSection" => {
       title,
       description
@@ -308,23 +310,22 @@ export const getFrontpageContent = async (): Promise<FrontpageContent> => {
   const doc = await getFrontpageDocument();
   const sections = doc?.sections || [];
 
-  return sections.map((section) => {
-    switch (section._type) {
-      case 'heroSection':
-        return buildHero(section);
-      case 'newsSection':
-        return buildNews(section);
-      case 'teamSection':
-        return buildTeam(section);
-      case 'pillarsSection':
-        return buildPillars(section);
-      case 'contactSection':
-        return buildContact(section);
-      default:
-        // Fallback to hero if unknown type
-        return buildHero({_type: 'heroSection'});
-    }
-  });
+  return {
+    hero: buildHero(doc?.hero || {_type: 'heroSection'}),
+    news: doc?.news ? buildNews(doc.news) : undefined,
+    sections: sections.map((section) => {
+      switch (section._type) {
+        case 'teamSection':
+          return buildTeam(section);
+        case 'pillarsSection':
+          return buildPillars(section);
+        case 'contactSection':
+          return buildContact(section);
+        default:
+          return null;
+      }
+    }).filter((section): section is FrontpageSection => section !== null),
+  };
 };
 
 export const getSiteSettings = async (): Promise<SiteSettingsDocument | null> => {
