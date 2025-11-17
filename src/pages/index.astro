@@ -4,6 +4,7 @@ import type {PortableTextBlock} from '@portabletext/types';
 import Layout from '../layouts/Layout.astro';
 import {getHomeHero} from '../lib/home';
 import {getLatestNews, getNewsPermalink, toPlainText} from '../lib/news';
+import {urlForImage} from '../lib/sanity';
 
 const pageTitle = 'Skipulagsfræðingafélag Íslands';
 const pageDescription = 'Skipulagsfræði veitir lausnir sem móta lifandi og sjálfbær borgarrými.';
@@ -11,8 +12,11 @@ const pageDescription = 'Skipulagsfræði veitir lausnir sem móta lifandi og sj
 const latestNews = await getLatestNews(3);
 const hasNews = latestNews.length > 0;
 
-const heroImage = 'https://www.figma.com/api/mcp/asset/cb60e198-bab5-43ce-a723-4208f8b9f108';
 const heroCopy = await getHomeHero();
+const heroImageUrl = heroCopy.image
+	? urlForImage(heroCopy.image).width(1040).height(728).url()
+	: undefined;
+const heroImageAlt = heroCopy.image?.alt || 'Yfirsýn yfir miðbæ Reykjavíkur';
 
 const formatDate = (value: string) =>
 	new Date(value).toLocaleDateString('is-IS', {
@@ -29,7 +33,7 @@ const getExcerpt = (content: PortableTextBlock[]) => {
 
 <Layout title={pageTitle} description={pageDescription}>
 	<section class="relative isolate overflow-hidden bg-[#87A291] mb-16 md:mb-20 lg:mb-28">
-        <div class="absolute inset-0 hidden bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.08)_100%)] lg:block" aria-hidden="true"></div>
+        <div class="pointer-events-none absolute inset-0 hidden bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.08)_100%)] lg:block" aria-hidden="true"></div>
         <div class="mx-auto flex w-full max-w-6xl flex-col items-center gap-10 px-5 py-16 sm:px-8 sm:py-20 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
             <div class="flex max-w-2xl flex-col items-center gap-6 text-center text-white lg:items-start lg:text-left">
                 <p class="text-xs font-semibold uppercase tracking-[0.35em] text-[#e6edea]">{heroCopy.badge}</p>
@@ -56,14 +60,16 @@ const getExcerpt = (content: PortableTextBlock[]) => {
                     </a>
                 </div>
             </div>
-            <figure class="mx-auto w-full max-w-[360px] max-h-[70vh] overflow-hidden rounded-2xl bg-white/10 shadow-2xl ring-1 ring-white/40 sm:max-w-[420px] lg:mx-0 lg:max-w-[520px]">
-                <img
-                    src={heroImage}
-                    alt="Yfirsýn yfir miðbæ Reykjavíkur"
-                    class="h-full w-full object-cover"
-                    loading="lazy"
-                />
-            </figure>
+            {heroImageUrl && (
+                <figure class="mx-auto w-full max-w-[360px] max-h-[70vh] overflow-hidden rounded-2xl bg-white/10 shadow-2xl ring-1 ring-white/40 sm:max-w-[420px] lg:mx-0 lg:max-w-[520px]">
+                    <img
+                        src={heroImageUrl}
+                        alt={heroImageAlt}
+                        class="h-full w-full object-cover"
+                        loading="lazy"
+                    />
+                </figure>
+            )}
         </div>
     </section>
 

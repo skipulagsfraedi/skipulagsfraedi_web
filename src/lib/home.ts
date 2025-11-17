@@ -1,10 +1,25 @@
 // src/lib/home.ts
 import {sanityClient} from './sanity';
 
+type SanityImageAsset = {
+  _type: 'reference';
+  _ref: string;
+  asset?: {
+    _ref: string;
+    _type: 'reference';
+  };
+};
+
+type SiteSettingsImage = {
+  asset: SanityImageAsset;
+  alt?: string;
+};
+
 type SiteSettingsDocument = {
   heroBadge?: string;
   heroTitle?: string;
   heroSubtitle?: string;
+  heroImage?: SiteSettingsImage;
   heroPrimaryCta?: SiteSettingsCta;
   heroSecondaryCta?: SiteSettingsCta;
   footerNotice?: string;
@@ -20,6 +35,7 @@ export type HeroCopy = {
   badge: string;
   title: string;
   subtitle: string;
+  image?: SiteSettingsImage;
   primaryCta: Required<SiteSettingsCta>;
   secondaryCta: Required<SiteSettingsCta>;
 };
@@ -33,6 +49,10 @@ const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
   heroBadge,
   heroTitle,
   heroSubtitle,
+  heroImage {
+    asset,
+    alt
+  },
   heroPrimaryCta {
     label,
     href
@@ -103,6 +123,7 @@ export const getHomeHero = async (): Promise<HeroCopy> => {
     badge: settings.heroBadge?.trim() || DEFAULT_HERO.badge,
     title: settings.heroTitle?.trim() || DEFAULT_HERO.title,
     subtitle: settings.heroSubtitle?.trim() || DEFAULT_HERO.subtitle,
+    image: settings.heroImage || undefined,
     primaryCta: resolveCta(settings.heroPrimaryCta, DEFAULT_HERO.primaryCta),
     secondaryCta: resolveCta(settings.heroSecondaryCta, DEFAULT_HERO.secondaryCta),
   };
