@@ -58,8 +58,32 @@
 }
 
 .portable-collapsible__summary {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	flex: 1;
+	min-width: 0;
 	font-size: 1rem;
 	line-height: 1.4;
+}
+
+.portable-collapsible__summary-title {
+	flex-shrink: 0;
+}
+
+.portable-collapsible__summary-preview {
+	flex: 1;
+	min-width: 0;
+	font-size: 0.95rem;
+	font-weight: 400;
+	color: #475569;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.portable-collapsible__item[open] .portable-collapsible__summary-preview {
+	display: none;
 }
 
 .portable-collapsible__icon {

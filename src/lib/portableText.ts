@@ -90,16 +90,32 @@ function renderCollapsibleItem(
   item: CollapsibleListItem & {body: PortableTextBlock[]},
 ): string {
   const summary = item.title?.trim() ? htmlEscape(item.title) : 'Atriði';
+  const previewText = getCollapsiblePreview(item.body);
+  const previewHtml = previewText
+    ? `<span class="portable-collapsible__summary-preview">${htmlEscape(previewText)}</span>`
+    : '';
+  const summaryHtml = [
+    '<span class="portable-collapsible__summary">',
+    `<span class="portable-collapsible__summary-title">${summary}</span>`,
+    previewHtml,
+    '</span>',
+  ].join('');
   const bodyHtml = renderPortableText(item.body);
   return [
     '<details class="portable-collapsible__item">',
     '<summary>',
-    `<span class="portable-collapsible__summary">${summary}</span>`,
+    summaryHtml,
     `<span class="portable-collapsible__icon" aria-hidden="true">${ICON_PLUS}${ICON_MINUS}</span>`,
     '</summary>',
     `<div class="portable-collapsible__content">${bodyHtml}</div>`,
     '</details>',
   ].join('');
+}
+
+function getCollapsiblePreview(blocks: PortableTextBlock[] = []): string {
+  return collectPlainText(blocks)
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function collectPlainText(blocks: PortableTextBlock[] = []): string {

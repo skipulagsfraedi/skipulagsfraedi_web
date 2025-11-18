@@ -125,7 +125,7 @@ const childSummaries = childPages.map((child) => {
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
-  <article class="mx-auto w-full max-w-3xl px-6 py-16">
+  <article class="mx-auto w-full max-w-5xl px-6 py-16">
     {breadcrumbs.length > 1 && (
       <nav aria-label="Brauðmolaslóð" class="text-xs uppercase tracking-[0.25em] text-slate-400">
         <ol class="flex flex-wrap items-center gap-2">
@@ -161,31 +161,4 @@ const childSummaries = childPages.map((child) => {
       <p class="mt-10 text-base text-slate-600">Innihald er í vinnslu fyrir þessa síðu.</p>
     )}
   </article>
-
-  {hasChildren && (
-    <section class="mx-auto w-full max-w-5xl px-6 pb-24">
-      <div class="rounded-3xl border border-zinc-200 bg-white px-6 py-10 shadow-sm">
-        <h2 class="text-xl font-semibold text-slate-900">Undirsíður</h2>
-        <ul class="mt-6 grid gap-4 md:grid-cols-2">
-          {childSummaries.map((child) => (
-            <li
-              class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
-            >
-              <a href={child.path} class="flex h-full flex-col gap-3">
-                <h3 class="text-lg font-semibold text-slate-900">{child.title}</h3>
-                {child.description ? (
-                  <p class="text-sm leading-relaxed text-slate-600">{child.description}</p>
-                ) : (
-                  <p class="text-sm text-slate-500">Skoða síðu</p>
-                )}
-                <span class="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-[#4d5c55]">
-                  Lesa meira &rarr;
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  )}
 </Layout>
