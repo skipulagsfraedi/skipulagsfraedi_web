@@ -1,3 +1,4 @@
+// src/lib/pages.ts - Fetch ordered Sanity pages and build trees for navigation reuse.
 import type {PortableTextBlock} from '@portabletext/types';
 import {sanityClient} from './sanity';
 
@@ -34,8 +35,12 @@ export const getAllPages = async () =>
     `${basePageFilter} | order(orderRank) ${pageProjection}`
   );
 
-export type PageTreeItem = PageReference & {
-  children: PageReference[];
+export type PageTreeNode = PageReference & {
+  orderRank?: string | null;
+};
+
+export type PageTreeItem = PageTreeNode & {
+  children: PageTreeNode[];
 };
 
 export const getPageTree = async () =>
@@ -44,10 +49,12 @@ export const getPageTree = async () =>
       _id,
       title,
       "slug": slug.current,
+      "orderRank": coalesce(orderRank, ''),
       "children": *[_type == "page" && references(^._id) && defined(slug.current) && !(_id in path("drafts.**"))] | order(orderRank) {
         _id,
         title,
-        "slug": slug.current
+        "slug": slug.current,
+        "orderRank": coalesce(orderRank, '')
       }
     }`
   );
