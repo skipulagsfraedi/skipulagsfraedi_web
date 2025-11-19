@@ -129,3 +129,89 @@
 .portable-collapsible__content > :last-child {
 	margin-bottom: 0;
 }
+
+/* Portable text formatting within collapsible content */
+.portable-collapsible__content .portable-text__paragraph {
+	margin: 0.75rem 0;
+}
+
+.portable-collapsible__content .portable-text__paragraph:first-child {
+	margin-top: 0;
+}
+
+.portable-collapsible__content .portable-text__paragraph:last-child {
+	margin-bottom: 0;
+}
+
+.portable-collapsible__content .portable-text__heading {
+	margin: 1rem 0 0.5rem;
+	font-weight: 600;
+	color: #0f172a;
+}
+
+.portable-collapsible__content .portable-text__heading--h1 {
+	font-size: 1.5rem;
+}
+
+.portable-collapsible__content .portable-text__heading--h2 {
+	font-size: 1.25rem;
+}
+
+.portable-collapsible__content .portable-text__heading--h3 {
+	font-size: 1.125rem;
+}
+
+.portable-collapsible__content .portable-text__heading--h4 {
+	font-size: 1rem;
+}
+
+.portable-collapsible__content .portable-text__heading:first-child {
+	margin-top: 0;
+}
+
+.portable-collapsible__content .portable-text__list {
+	margin: 0.75rem 0;
+	padding-left: 1.5rem;
+}
+
+.portable-collapsible__content .portable-text__list--bullet {
+	list-style-type: disc;
+}
+
+.portable-collapsible__content .portable-text__list--number {
+	list-style-type: decimal;
+}
+
+.portable-collapsible__content .portable-text__list-item {
+	margin: 0.375rem 0;
+}
+
+.portable-collapsible__content .portable-text__list-item p {
+	margin: 0;
+}
+
+.portable-collapsible__content .portable-text__blockquote {
+	margin: 0.75rem 0;
+	padding-left: 1rem;
+	border-left: 3px solid #87a291;
+	color: #64748b;
+	font-style: italic;
+}
+
+.portable-collapsible__content strong {
+	font-weight: 600;
+	color: #0f172a;
+}
+
+.portable-collapsible__content em {
+	font-style: italic;
+}
+
+.portable-collapsible__content .portable-text__code {
+	background-color: #f1f5f9;
+	color: #0f172a;
+	padding: 0.125rem 0.375rem;
+	border-radius: 0.25rem;
+	font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+	font-size: 0.875em;
+}

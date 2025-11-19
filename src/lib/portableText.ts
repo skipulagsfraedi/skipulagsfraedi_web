@@ -37,6 +37,25 @@ const renderPortableText = (blocks: PortableTextBlock[] = []) =>
     components: {
       marks: {
         link,
+        strong: ({children}) => `<strong>${children}</strong>`,
+        em: ({children}) => `<em>${children}</em>`,
+        code: ({children}) => `<code class="portable-text__code">${children}</code>`,
+      },
+      block: {
+        normal: ({children}) => `<p class="portable-text__paragraph">${children}</p>`,
+        h1: ({children}) => `<h1 class="portable-text__heading portable-text__heading--h1">${children}</h1>`,
+        h2: ({children}) => `<h2 class="portable-text__heading portable-text__heading--h2">${children}</h2>`,
+        h3: ({children}) => `<h3 class="portable-text__heading portable-text__heading--h3">${children}</h3>`,
+        h4: ({children}) => `<h4 class="portable-text__heading portable-text__heading--h4">${children}</h4>`,
+        blockquote: ({children}) => `<blockquote class="portable-text__blockquote">${children}</blockquote>`,
+      },
+      list: {
+        bullet: ({children}) => `<ul class="portable-text__list portable-text__list--bullet">${children}</ul>`,
+        number: ({children}) => `<ol class="portable-text__list portable-text__list--number">${children}</ol>`,
+      },
+      listItem: {
+        bullet: ({children}) => `<li class="portable-text__list-item">${children}</li>`,
+        number: ({children}) => `<li class="portable-text__list-item">${children}</li>`,
       },
       types: {
         image: ({value}) => {
