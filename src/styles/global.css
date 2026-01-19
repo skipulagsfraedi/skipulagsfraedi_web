@@ -203,6 +203,87 @@
 	color: #0f172a;
 }
 
+/* Portable text: global styles (outside collapsible sections) */
+.portable-text__paragraph {
+	margin: 0.85rem 0;
+	color: #475569;
+	line-height: 1.75;
+	font-size: 1rem;
+}
+
+.portable-text__paragraph:first-child {
+	margin-top: 0;
+}
+
+.portable-text__paragraph:last-child {
+	margin-bottom: 0;
+}
+
+.portable-text__heading {
+	margin: 1.5rem 0 0.75rem;
+	font-weight: 600;
+	color: #0f172a;
+}
+
+.portable-text__heading--h1 {
+	font-size: 2rem;
+}
+
+.portable-text__heading--h2 {
+	font-size: 1.5rem;
+}
+
+.portable-text__heading--h3 {
+	font-size: 1.25rem;
+}
+
+.portable-text__heading--h4 {
+	font-size: 1.125rem;
+}
+
+.portable-text__heading:first-child {
+	margin-top: 0;
+}
+
+.portable-text__list {
+	margin: 1rem 0;
+	padding-left: 1.5rem;
+	color: #475569;
+	font-size: 1rem;
+	line-height: 1.65;
+}
+
+.portable-text__list--bullet {
+	list-style-type: disc;
+}
+
+.portable-text__list--number {
+	list-style-type: decimal;
+}
+
+.portable-text__list-item {
+	margin: 0.45rem 0;
+}
+
+.portable-text__list-item p {
+	margin: 0;
+}
+
+.portable-text__blockquote {
+	margin: 1rem 0;
+	padding-left: 1.1rem;
+	border-left: 3px solid #87a291;
+	color: #64748b;
+	font-style: italic;
+}
+
+.portable-text__code {
+	padding: 0.15rem 0.35rem;
+	border-radius: 0.35rem;
+	background: #f5f5f5;
+	font-size: 0.95rem;
+}
+
 .portable-collapsible__content em {
 	font-style: italic;
 }
