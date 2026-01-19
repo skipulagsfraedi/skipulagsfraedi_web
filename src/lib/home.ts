@@ -132,7 +132,7 @@ export type FrontpageContact = {
   title: string;
   lead: string;
   email: string;
-  note: string;
+  note?: string;
 };
 
 export type FrontpageSection =
@@ -414,13 +414,16 @@ const buildPillars = (input: PillarsSectionInput): FrontpagePillars => {
   };
 };
 
-const buildContact = (input: ContactSectionInput): FrontpageContact => ({
-  _type: 'contactSection',
-  title: withFallback(input.title, DEFAULT_CONTACT.title),
-  lead: withFallback(input.lead, DEFAULT_CONTACT.lead),
-  email: withFallback(input.email, DEFAULT_CONTACT.email),
-  note: withFallback(input.note, DEFAULT_CONTACT.note),
-});
+const buildContact = (input: ContactSectionInput): FrontpageContact => {
+  const trimmedNote = input.note?.trim();
+  return {
+    _type: 'contactSection',
+    title: withFallback(input.title, DEFAULT_CONTACT.title),
+    lead: withFallback(input.lead, DEFAULT_CONTACT.lead),
+    email: withFallback(input.email, DEFAULT_CONTACT.email),
+    ...(trimmedNote && trimmedNote.length > 0 ? { note: trimmedNote } : {}),
+  };
+};
 
 const resolveCta = (
   value: SanityCtaInput | undefined,
