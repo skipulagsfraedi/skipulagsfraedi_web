@@ -7,6 +7,7 @@ import {getSiteFooter} from '../lib/home';
 const {
 	title = 'Skipulagsfræðingafélag Íslands',
 	description = 'Minimal scaffolding for the Skipulagsfræði web experience.',
+	hideChrome = false,
 } = Astro.props;
 
 const year = new Date().getFullYear();
@@ -25,26 +26,30 @@ const footerCopy = await getSiteFooter();
 	</head>
 	<body class="min-h-screen bg-zinc-50 text-slate-900 antialiased">
 		<div class="flex min-h-screen flex-col">
-		<header class="relative z-50 border-b border-zinc-200 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/70">
-			<div class="mx-auto flex w-full max-w-5xl items-center gap-4 px-6 py-4 md:py-8">
-				<a href="/" class="flex min-w-0 flex-1 items-center gap-3 font-semibold text-slate-700">
-					<img src="/sffi-logo.svg" alt="Skipulagsfræðingafélag Íslands merki" class="h-10 w-auto flex-shrink-0 md:h-14" />
-					<span class="block text-lg leading-tight md:text-2xl">Skipulagsfræðinga&shy;félag Íslands</span>
+		{!hideChrome && (
+			<header class="relative z-50 border-b border-zinc-200 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/70">
+				<div class="mx-auto flex w-full max-w-5xl items-center gap-4 px-6 py-4 md:py-8">
+					<a href="/" class="flex min-w-0 flex-1 items-center gap-3 font-semibold text-slate-700">
+						<img src="/sffi-logo.svg" alt="Skipulagsfræðingafélag Íslands merki" class="h-10 w-auto flex-shrink-0 md:h-14" />
+						<span class="block text-lg leading-tight md:text-2xl">Skipulagsfræðinga&shy;félag Íslands</span>
 					</a>
 					<Navigation />
 				</div>
 			</header>
+		)}
 			<main class="flex-1">
 				<slot />
 			</main>
-		<footer class="border-t border-zinc-200 bg-white/60">
-			<div class="mx-auto flex w-full max-w-5xl flex-col gap-2 px-6 py-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-				<p class="tracking-tight">© {year} {footerCopy.notice}</p>
-				<a class="transition-colors hover:text-[#4d5c55]" href={`mailto:${footerCopy.email}`}>
-					{footerCopy.email}
-				</a>
-			</div>
-		</footer>
+			{!hideChrome && (
+				<footer class="border-t border-zinc-200 bg-white/60">
+					<div class="mx-auto flex w-full max-w-5xl flex-col gap-2 px-6 py-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+						<p class="tracking-tight">© {year} {footerCopy.notice}</p>
+						<a class="transition-colors hover:text-[#4d5c55]" href={`mailto:${footerCopy.email}`}>
+							{footerCopy.email}
+						</a>
+					</div>
+				</footer>
+			)}
 		</div>
 	</body>
 </html>
