@@ -86,6 +86,11 @@ type FrontpageContentDocument = {
 type SiteSettingsDocument = {
   footerNotice?: string;
   footerEmail?: string;
+  siteLive?: boolean;
+  splashTitle?: string;
+  splashMessage?: string;
+  splashCtaLabel?: string;
+  splashCtaHref?: string;
 };
 
 // Processed section types
@@ -151,6 +156,17 @@ export type FooterCopy = {
   email: string;
 };
 
+export type SiteSplash = {
+  title: string;
+  message: string;
+  cta?: Cta;
+};
+
+export type SiteReleaseState = {
+  siteLive: boolean;
+  splash: SiteSplash;
+};
+
 const FRONT_PAGE_QUERY = `*[_type == "frontpageContent"][0]{
   hero {
     badge,
@@ -205,7 +221,12 @@ const FRONT_PAGE_QUERY = `*[_type == "frontpageContent"][0]{
 
 const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
   footerNotice,
-  footerEmail
+  footerEmail,
+  siteLive,
+  splashTitle,
+  splashMessage,
+  splashCtaLabel,
+  splashCtaHref
 }`;
 
 // Default values for each section type
@@ -275,6 +296,19 @@ const DEFAULT_CONTACT: Omit<FrontpageContact, '_type'> = {
 const DEFAULT_FOOTER: FooterCopy = {
   notice: 'Skipulagsfræðingafélag Íslands. Allur réttur áskilinn.',
   email: 'hallo@skipulagsfraedi.is',
+};
+
+const DEFAULT_SITE_RELEASE: SiteReleaseState = {
+  siteLive: false,
+  splash: {
+    title: 'Vefur í vinnslu',
+    message:
+      'Ný vefsíða Skipulagsfræðingafélags Íslands er í uppbyggingu. Við bjóðum gesti velkomna aftur fljótlega.',
+    cta: {
+      label: 'Hafðu samband',
+      href: 'mailto:hallo@skipulagsfraedi.is',
+    },
+  },
 };
 
 let cachedFrontpage: FrontpageContentDocument | null | undefined;
@@ -365,6 +399,34 @@ export const getSiteFooter = async (): Promise<FooterCopy> => {
   };
 };
 
+export const getSiteReleaseState = async (): Promise<SiteReleaseState> => {
+  const settings = await getSiteSettings();
+
+  if (!settings) {
+    return DEFAULT_SITE_RELEASE;
+  }
+
+  const splashCta = resolveOptionalCta(
+    settings.splashCtaLabel,
+    settings.splashCtaHref,
+  );
+
+  return {
+    siteLive: settings.siteLive ?? DEFAULT_SITE_RELEASE.siteLive,
+    splash: {
+      title: withFallback(
+        settings.splashTitle,
+        DEFAULT_SITE_RELEASE.splash.title,
+      ),
+      message: withFallback(
+        settings.splashMessage,
+        DEFAULT_SITE_RELEASE.splash.message,
+      ),
+      ...(splashCta ? {cta: splashCta} : {}),
+    },
+  };
+};
+
 const buildHero = (input: HeroSectionInput): FrontpageHero => ({
   _type: 'heroSection',
   badge: withFallback(input.badge, DEFAULT_HERO.badge),
@@ -434,6 +496,20 @@ const resolveCta = (
 
   if (!label || !href) {
     return fallback;
+  }
+
+  return {label, href};
+};
+
+const resolveOptionalCta = (
+  labelValue: string | undefined,
+  hrefValue: string | undefined,
+): Cta | undefined => {
+  const label = labelValue?.trim();
+  const href = hrefValue?.trim();
+
+  if (!label || !href) {
+    return undefined;
   }
 
   return {label, href};
