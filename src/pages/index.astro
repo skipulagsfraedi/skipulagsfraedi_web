@@ -227,6 +227,13 @@ const getExcerpt = (content: PortableTextBlock[]) => {
 			})}
 		</>
 	) : (
-		<section class="min-h-screen bg-white"></section>
+		<section class="flex min-h-screen items-center justify-center bg-white">
+			<img
+				src="/sffi-logo.svg"
+				alt="Skipulagsfræðingafélag Íslands merki"
+				class="h-16 w-auto opacity-80"
+				loading="lazy"
+			/>
+		</section>
 	)}
 </Layout>
