@@ -44,6 +44,16 @@ h6 {
 	font-size: 1rem;
 }
 
+/* src/styles/global.css: keep hero/pillars headings white */
+.sffi-hero h1,
+.sffi-hero h2,
+.sffi-hero h3,
+.sffi-pillars h1,
+.sffi-pillars h2,
+.sffi-pillars h3 {
+	color: #ffffff;
+}
+
 .portable-collapsible {
 	margin: 2.5rem 0;
 	border: 1px solid #e4e4e7;

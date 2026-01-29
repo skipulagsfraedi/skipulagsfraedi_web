@@ -4,7 +4,6 @@ import type {PortableTextBlock} from '@portabletext/types';
 import Layout from '../layouts/Layout.astro';
 import {
 	getFrontpageContent,
-	getSiteReleaseState,
 	type FrontpageSection,
 	type FrontpageHero,
 	type FrontpageNews,
@@ -19,10 +18,6 @@ const pageDescription = 'Skipulagsfræði veitir lausnir sem móta lifandi og sj
 
 const latestNews = await getLatestNews(3);
 const hasNews = latestNews.length > 0;
-
-const releaseState = await getSiteReleaseState();
-const isPreviewDeployment = import.meta.env.VERCEL_ENV === 'preview';
-const isSiteLive = releaseState.siteLive || isPreviewDeployment;
 
 const frontpageContent = await getFrontpageContent();
 const {hero, news, sections} = frontpageContent;
@@ -46,203 +41,192 @@ const getExcerpt = (content: PortableTextBlock[]) => {
 };
 ---
 
-<Layout title={pageTitle} description={pageDescription} hideChrome={!isSiteLive}>
-	{isSiteLive ? (
-		<>
-			{/* Hero Section */}
-			{(() => {
-				const heroImageUrl = hero.image
-					? urlForImage(hero.image).width(1040).height(728).url()
-					: undefined;
-				const heroImageAlt = hero.image?.alt || 'Yfirsýn yfir miðbæ Reykjavíkur';
-				const hasHeroImage = Boolean(heroImageUrl);
+<Layout title={pageTitle} description={pageDescription} hideChrome={false}>
+	<>
+		{/* Hero Section */}
+		{(() => {
+			const heroImageUrl = hero.image?.asset?._ref
+				? urlForImage(hero.image).width(1040).height(728).url()
+				: undefined;
+			const heroImageAlt = hero.image?.alt || 'Yfirsýn yfir miðbæ Reykjavíkur';
+			const hasHeroImage = Boolean(heroImageUrl);
 
-				return (
-					<section class="relative isolate overflow-hidden bg-[#87A291] mb-16 md:mb-20 lg:mb-28">
-						<div class="pointer-events-none absolute inset-0 hidden bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.08)_100%)] lg:block" aria-hidden="true"></div>
+			return (
+				<section class="sffi-hero relative isolate overflow-hidden bg-[#87A291] mb-16 md:mb-20 lg:mb-28">
+					<div class="pointer-events-none absolute inset-0 hidden bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.08)_100%)] lg:block" aria-hidden="true"></div>
+					<div
+						class={`mx-auto flex w-full max-w-6xl flex-col items-center gap-10 px-5 py-16 sm:px-8 sm:py-20 ${
+							hasHeroImage ? 'lg:flex-row lg:items-center lg:justify-between lg:gap-16' : 'lg:items-center lg:justify-center'
+						}`}
+					>
 						<div
-							class={`mx-auto flex w-full max-w-6xl flex-col items-center gap-10 px-5 py-16 sm:px-8 sm:py-20 ${
-								hasHeroImage ? 'lg:flex-row lg:items-center lg:justify-between lg:gap-16' : 'lg:items-center lg:justify-center'
+							class={`flex max-w-2xl flex-col items-center gap-6 text-center text-white ${
+								hasHeroImage ? 'lg:items-start lg:text-left' : 'lg:items-center lg:text-center'
 							}`}
 						>
-							<div
-								class={`flex max-w-2xl flex-col items-center gap-6 text-center text-white ${
-									hasHeroImage ? 'lg:items-start lg:text-left' : 'lg:items-center lg:text-center'
-								}`}
-							>
-								<p class="text-xs font-semibold uppercase tracking-[0.35em] text-[#e6edea]">{hero.badge}</p>
-								<div class="space-y-5">
-									<h1 class="text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
-										{hero.title}
-									</h1>
-									<p class="text-base leading-relaxed text-[#f2f5f3] sm:text-lg">
-										{hero.subtitle}
-									</p>
-								</div>
-								<div class="flex flex-wrap justify-center gap-4 lg:justify-start">
-									<a
-										href={hero.primaryCta.href}
-										class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#2f3a36] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#f3f6f4] focus-visible:outline-offset-2 focus-visible:outline-[#c6d4cd]"
-									>
-										{hero.primaryCta.label}
-									</a>
-									<a
-										href={hero.secondaryCta.href}
-										class="inline-flex items-center gap-2 rounded-full border border-white/70 px-5 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-white hover:text-white/90"
-									>
-										{hero.secondaryCta.label}
-									</a>
-								</div>
+							<p class="text-xs font-semibold uppercase tracking-[0.35em] text-[#e6edea]">{hero.badge}</p>
+							<div class="space-y-5">
+								<h1 class="text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
+									{hero.title}
+								</h1>
+								<p class="text-base leading-relaxed text-[#f2f5f3] sm:text-lg">
+									{hero.subtitle}
+								</p>
 							</div>
-							{heroImageUrl && (
-								<figure class="mx-auto w-full max-w-[360px] max-h-[70vh] overflow-hidden rounded-2xl bg-white/10 shadow-2xl ring-1 ring-white/40 sm:max-w-[420px] lg:mx-0 lg:max-w-[520px]">
-									<img
-										src={heroImageUrl}
-										alt={heroImageAlt}
-										class="h-full w-full object-cover"
-										loading="lazy"
-									/>
-								</figure>
-							)}
+							<div class="flex flex-wrap justify-center gap-4 lg:justify-start">
+								<a
+									href={hero.primaryCta.href}
+									class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#2f3a36] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#f3f6f4] focus-visible:outline-offset-2 focus-visible:outline-[#c6d4cd]"
+								>
+									{hero.primaryCta.label}
+								</a>
+								<a
+									href={hero.secondaryCta.href}
+									class="inline-flex items-center gap-2 rounded-full border border-white/70 px-5 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-white hover:text-white/90"
+								>
+									{hero.secondaryCta.label}
+								</a>
+							</div>
+						</div>
+						{heroImageUrl && (
+							<figure class="mx-auto w-full max-w-[360px] max-h-[70vh] overflow-hidden rounded-2xl bg-white/10 shadow-2xl ring-1 ring-white/40 sm:max-w-[420px] lg:mx-0 lg:max-w-[520px]">
+								<img
+									src={heroImageUrl}
+									alt={heroImageAlt}
+									class="h-full w-full object-cover"
+									loading="lazy"
+								/>
+							</figure>
+						)}
+					</div>
+				</section>
+			);
+		})()}
+
+		{/* News Section */}
+		{news && hasNews && (
+			<section id="news" class="mx-auto w-full max-w-5xl px-6 pb-24">
+				<div class="flex flex-col gap-10 rounded-3xl border border-zinc-200 bg-white px-6 py-10">
+					<div class="flex flex-col gap-3">
+						<p class="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">{news.badge}</p>
+						<h2 class="text-xl font-semibold text-slate-900">{news.title}</h2>
+						<p class="text-sm text-slate-600">
+							{news.description}
+						</p>
+					</div>
+					<ul class="grid gap-6 md:grid-cols-3">
+						{latestNews.map((post) => (
+							<li
+								class="flex h-full flex-col rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+							>
+								<a href={getNewsPermalink(post)} class="flex h-full flex-col gap-4">
+									<div class="space-y-1">
+										<p class="text-xs font-medium uppercase tracking-[0.25em] text-slate-400">
+											{formatDate(post.publishedAt)}
+										</p>
+										<h3 class="text-base font-semibold text-slate-900">
+											{post.title}
+										</h3>
+									</div>
+									<p class="text-sm leading-relaxed text-slate-600">{getExcerpt(post.content)}</p>
+									<span class="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-[#4d5c55]">
+										{news.readMoreLabel}
+									</span>
+								</a>
+							</li>
+						))}
+					</ul>
+					<div>
+						<a
+							href={news.cta.href}
+							class="inline-flex items-center gap-2 rounded-full border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-500 hover:text-slate-900"
+						>
+							{news.cta.label}
+						</a>
+					</div>
+				</div>
+			</section>
+		)}
+
+		{/* Pagebuilder Sections */}
+		{sections.map((section) => {
+			if (section._type === 'teamSection') {
+				const team = section as {title: string; description: string};
+				return (
+					<section id="team" class="mx-auto w-full max-w-5xl px-6 pb-24">
+						<div class="rounded-3xl border border-zinc-200 bg-white px-6 py-10 text-sm text-slate-600">
+							<h2 class="text-xl font-semibold text-slate-900">{team.title}</h2>
+							<p class="mt-4 max-w-2xl">
+								{team.description}
+							</p>
 						</div>
 					</section>
 				);
-			})()}
+			}
 
-			{/* News Section */}
-			{news && hasNews && (
-				<section id="news" class="mx-auto w-full max-w-5xl px-6 pb-24">
-					<div class="flex flex-col gap-10 rounded-3xl border border-zinc-200 bg-white px-6 py-10">
-						<div class="flex flex-col gap-3">
-							<p class="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">{news.badge}</p>
-							<h2 class="text-xl font-semibold text-slate-900">{news.title}</h2>
-							<p class="text-sm text-slate-600">
-								{news.description}
+			if (section._type === 'pillarsSection') {
+				const pillars = section as FrontpagePillars;
+				return (
+				<section class="sffi-pillars bg-[#87A291] mb-24">
+						<div class="mx-auto flex w-full max-w-5xl flex-col gap-12 px-6 py-20 text-white">
+							<div class="space-y-4 text-center">
+								<p class="text-xs font-semibold uppercase tracking-[0.35em] text-white/70">{pillars.badge}</p>
+								<h2 class="text-2xl font-semibold text-white sm:text-3xl">{pillars.title}</h2>
+								<p class="mx-auto max-w-2xl text-sm text-white/80 sm:text-base">
+									{pillars.description}
+								</p>
+							</div>
+							<ul class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+								{pillars.items.map((item, index) => {
+									const iconPaths = pillarIconPaths[index % pillarIconPaths.length];
+									return (
+										<li class="flex flex-col gap-4 rounded-2xl bg-white/5 p-6 shadow-sm shadow-black/5 ring-1 ring-white/10">
+											<span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/15">
+												<svg class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+													{iconPaths.map((d) => (
+														<path d={d} />
+													))}
+												</svg>
+											</span>
+											<div class="space-y-2">
+												<h3 class="text-lg font-semibold text-white">{item.title}</h3>
+												<p class="text-sm text-white/80">
+													{item.description}
+												</p>
+											</div>
+										</li>
+									);
+								})}
+							</ul>
+						</div>
+					</section>
+				);
+			}
+
+			if (section._type === 'contactSection') {
+				const contact = section as FrontpageContact;
+				return (
+					<section id="contact" class="mx-auto w-full max-w-5xl px-6 pb-32">
+						<div class="rounded-3xl border border-zinc-200 bg-white px-6 py-10 text-sm text-slate-600">
+							<h2 class="text-xl font-semibold text-slate-900">{contact.title}</h2>
+							<p class="mt-4 max-w-xl">
+								{contact.lead}{' '}
+								<a class="font-semibold text-[#4d5c55] transition-colors hover:text-[#2f3a36]" href={`mailto:${contact.email}`}>
+									{contact.email}
+								</a>
+								{contact.note ? (
+									<>
+										{' '}
+										{contact.note}
+									</>
+								) : null}
 							</p>
 						</div>
-						<ul class="grid gap-6 md:grid-cols-3">
-							{latestNews.map((post) => (
-								<li
-									class="flex h-full flex-col rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
-								>
-									<a href={getNewsPermalink(post)} class="flex h-full flex-col gap-4">
-										<div class="space-y-1">
-											<p class="text-xs font-medium uppercase tracking-[0.25em] text-slate-400">
-												{formatDate(post.publishedAt)}
-											</p>
-											<h3 class="text-base font-semibold text-slate-900">
-												{post.title}
-											</h3>
-										</div>
-										<p class="text-sm leading-relaxed text-slate-600">{getExcerpt(post.content)}</p>
-										<span class="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-[#4d5c55]">
-											{news.readMoreLabel}
-										</span>
-									</a>
-								</li>
-							))}
-						</ul>
-						<div>
-							<a
-								href={news.cta.href}
-								class="inline-flex items-center gap-2 rounded-full border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-500 hover:text-slate-900"
-							>
-								{news.cta.label}
-							</a>
-						</div>
-					</div>
-				</section>
-			)}
+					</section>
+				);
+			}
 
-			{/* Pagebuilder Sections */}
-			{sections.map((section) => {
-				if (section._type === 'teamSection') {
-					const team = section as {title: string; description: string};
-					return (
-						<section id="team" class="mx-auto w-full max-w-5xl px-6 pb-24">
-							<div class="rounded-3xl border border-zinc-200 bg-white px-6 py-10 text-sm text-slate-600">
-								<h2 class="text-xl font-semibold text-slate-900">{team.title}</h2>
-								<p class="mt-4 max-w-2xl">
-									{team.description}
-								</p>
-							</div>
-						</section>
-					);
-				}
-
-				if (section._type === 'pillarsSection') {
-					const pillars = section as FrontpagePillars;
-					return (
-						<section class="bg-[#87A291] mb-24">
-							<div class="mx-auto flex w-full max-w-5xl flex-col gap-12 px-6 py-20 text-white">
-								<div class="space-y-4 text-center">
-									<p class="text-xs font-semibold uppercase tracking-[0.35em] text-white/70">{pillars.badge}</p>
-									<h2 class="text-2xl font-semibold text-white sm:text-3xl">{pillars.title}</h2>
-									<p class="mx-auto max-w-2xl text-sm text-white/80 sm:text-base">
-										{pillars.description}
-									</p>
-								</div>
-								<ul class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-									{pillars.items.map((item, index) => {
-										const iconPaths = pillarIconPaths[index % pillarIconPaths.length];
-										return (
-											<li class="flex flex-col gap-4 rounded-2xl bg-white/5 p-6 shadow-sm shadow-black/5 ring-1 ring-white/10">
-												<span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/15">
-													<svg class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-														{iconPaths.map((d) => (
-															<path d={d} />
-														))}
-													</svg>
-												</span>
-												<div class="space-y-2">
-													<h3 class="text-lg font-semibold text-white">{item.title}</h3>
-													<p class="text-sm text-white/80">
-														{item.description}
-													</p>
-												</div>
-											</li>
-										);
-									})}
-								</ul>
-							</div>
-						</section>
-					);
-				}
-
-				if (section._type === 'contactSection') {
-					const contact = section as FrontpageContact;
-					return (
-						<section id="contact" class="mx-auto w-full max-w-5xl px-6 pb-32">
-							<div class="rounded-3xl border border-zinc-200 bg-white px-6 py-10 text-sm text-slate-600">
-								<h2 class="text-xl font-semibold text-slate-900">{contact.title}</h2>
-								<p class="mt-4 max-w-xl">
-									{contact.lead}{' '}
-									<a class="font-semibold text-[#4d5c55] transition-colors hover:text-[#2f3a36]" href={`mailto:${contact.email}`}>
-										{contact.email}
-									</a>
-									{contact.note ? (
-										<>
-											{' '}
-											{contact.note}
-										</>
-									) : null}
-								</p>
-							</div>
-						</section>
-					);
-				}
-
-				return null;
-			})}
-		</>
-	) : (
-		<section class="flex min-h-screen items-center justify-center bg-white">
-			<img
-				src="/sffi-logo.svg"
-				alt="Skipulagsfræðingafélag Íslands merki"
-				class="h-16 w-auto opacity-80"
-				loading="lazy"
-			/>
-		</section>
-	)}
+			return null;
+		})}
+	</>
 </Layout>

@@ -86,7 +86,6 @@ type FrontpageContentDocument = {
 type SiteSettingsDocument = {
   footerNotice?: string;
   footerEmail?: string;
-  siteLive?: boolean;
 };
 
 // Processed section types
@@ -152,10 +151,6 @@ export type FooterCopy = {
   email: string;
 };
 
-export type SiteReleaseState = {
-  siteLive: boolean;
-};
-
 const FRONT_PAGE_QUERY = `*[_type == "frontpageContent"][0]{
   hero {
     badge,
@@ -210,8 +205,7 @@ const FRONT_PAGE_QUERY = `*[_type == "frontpageContent"][0]{
 
 const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
   footerNotice,
-  footerEmail,
-  siteLive
+  footerEmail
 }`;
 
 // Default values for each section type
@@ -281,10 +275,6 @@ const DEFAULT_CONTACT: Omit<FrontpageContact, '_type'> = {
 const DEFAULT_FOOTER: FooterCopy = {
   notice: 'Skipulagsfræðingafélag Íslands. Allur réttur áskilinn.',
   email: 'hallo@skipulagsfraedi.is',
-};
-
-const DEFAULT_SITE_RELEASE: SiteReleaseState = {
-  siteLive: false,
 };
 
 let cachedFrontpage: FrontpageContentDocument | null | undefined;
@@ -372,18 +362,6 @@ export const getSiteFooter = async (): Promise<FooterCopy> => {
   return {
     notice: withFallback(settings.footerNotice, DEFAULT_FOOTER.notice),
     email: withFallback(settings.footerEmail, DEFAULT_FOOTER.email),
-  };
-};
-
-export const getSiteReleaseState = async (): Promise<SiteReleaseState> => {
-  const settings = await getSiteSettings();
-
-  if (!settings) {
-    return DEFAULT_SITE_RELEASE;
-  }
-
-  return {
-    siteLive: settings.siteLive ?? DEFAULT_SITE_RELEASE.siteLive,
   };
 };
 
