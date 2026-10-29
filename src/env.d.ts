@@ -11,6 +11,7 @@ interface ImportMetaEnv {
   readonly SANITY_API_VERSION?: string;
   readonly SANITY_API_READ_TOKEN?: string;
   readonly SANITY_USE_CDN?: 'true' | 'false';
+  readonly PUBLIC_FATHOM_SITE_ID?: string;
 }
 
 interface ImportMeta {
